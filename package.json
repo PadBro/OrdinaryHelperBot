@@ -1,0 +1,27 @@
+{
+  "name": "ordinarybrobot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "sourceType": "module",
+  "scripts": {
+    "lint": "eslint ./**/*.js",
+    "lint:fix": "eslint ./**/*.js --fix",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PadBro/OrdinaryBroBot.git"
+  },
+  "author": "PadBro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PadBro/OrdinaryBroBot/issues"
+  },
+  "homepage": "https://github.com/PadBro/OrdinaryBroBot#readme",
+  "description": "",
+  "dependencies": {
+    "dayjs": "^1.11.13",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5"
+  }
+}
