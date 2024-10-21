@@ -22,9 +22,4 @@ client.on('guildMemberRemove', (member) => {
   sendLeaveMessage(channel, member);
 });
 
-client.on('guildMemberAdd', (member) => {
-  const channel = client.channels.cache.get(process.env.LEAVE_CHANNEL);
-  sendLeaveMessage(channel, member);
-});
-
 client.login(process.env.DISCORD_TOKEN);
