@@ -28,7 +28,11 @@ const sendLeaveMessage = (channel, member) => {
     .setDescription(`${member} left`)
     .addFields(
       { name: 'Nickname:', value: `${member.nickname ?? '---'}`, inline: true },
-      { name: 'Displayname:', value: `${member.user.displayName}`, inline: true },
+      {
+        name: 'Displayname:',
+        value: `${member.user.displayName}`,
+        inline: true,
+      },
       { name: '\u200B', value: '\u200B' },
       {
         name: 'Roles:',
