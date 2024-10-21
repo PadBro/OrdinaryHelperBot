@@ -4,9 +4,8 @@
   "main": "index.js",
   "sourceType": "module",
   "scripts": {
-    "lint": "eslint ./**/*.js",
-    "lint:fix": "eslint ./**/*.js --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint --ignore-pattern node_modules --fix . && prettier . --write",
+    "lint:ci": "eslint --ignore-pattern node_modules --no-fix --max-warnings=0 . && prettier . --check"
   },
   "repository": {
     "type": "git",
@@ -23,5 +22,12 @@
     "dayjs": "^1.11.13",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "eslint": "^8.57.1",
+    "globals": "^15.11.0",
+    "prettier": "3.3.3",
+    "typescript-eslint": "^8.10.0"
   }
 }
