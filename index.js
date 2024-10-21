@@ -25,7 +25,7 @@ client.on('guildMemberRemove', (member) => {
 
 client.on('guildMemberAdd', (member) => {
   if (process.env.JOIN_ROLE_ID) {
-    addRole(member, process.env.JOIN_ROLE_ID)
+    addRole(member, process.env.JOIN_ROLE_ID);
   }
 });
 
