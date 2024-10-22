@@ -19,7 +19,7 @@ export const sendLeaveMessage = (channel, member) => {
     embedColor = memberRole.hexColor;
   }
 
-  const diff = dayjs().diff(dayjs(member.joinedAt), 'day');
+  const diff = dayjs().diff(dayjs(member.joinedAt), 'day', true);
   const duration = dayjs.duration(diff, 'days').humanize();
 
   const embed = new EmbedBuilder()
@@ -28,7 +28,11 @@ export const sendLeaveMessage = (channel, member) => {
     .setDescription(`${member} left`)
     .addFields(
       { name: 'Nickname:', value: `${member.nickname ?? '---'}`, inline: true },
-      { name: 'Displayname:', value: `${member.displayName}`, inline: true },
+      {
+        name: 'Displayname:',
+        value: `${member.user.displayName}`,
+        inline: true,
+      },
       { name: '\u200B', value: '\u200B' },
       {
         name: 'Roles:',
@@ -37,7 +41,7 @@ export const sendLeaveMessage = (channel, member) => {
           : '---',
         inline: true,
       },
-      { name: 'Time on Server', value: `${duration}`, inline: true },
+      { name: 'Time on Server:', value: `${duration}`, inline: true },
     )
     .setThumbnail(member.user.avatarURL())
     .setTimestamp();
