@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node --esm index.ts",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint --ignore-pattern node_modules --fix . && prettier . --write",
     "lint:ci": "eslint --ignore-pattern node_modules --no-fix --max-warnings=0 . && prettier . --check"
   },

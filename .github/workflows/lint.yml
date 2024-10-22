@@ -20,5 +20,7 @@ jobs:
           node-version: v22.2.0
       - name: Install dependencies
         run: npm install --frozen-lockfile
+      - name: Typecheck
+        run: npm run typecheck
       - name: Run linter + prettier
         run: npm run lint:ci
