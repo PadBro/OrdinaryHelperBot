@@ -1,4 +1,4 @@
-export const addRole = (member, role_id) => {
+const addRole = (member, role_id) => {
   try {
     member.roles.add(role_id);
   } catch (e) {
