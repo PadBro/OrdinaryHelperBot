@@ -1,8 +1,7 @@
-const { Client, Events, IntentsBitField } = require('discord.js');
-const { sendLeaveMessage } = require('./utils/sendLeaveMessage');
-const { addRole } = require('./utils/addRole');
-const dotenv = require('dotenv');
-dotenv.config();
+import { Client, Events, IntentsBitField } from 'discord.js';
+import { sendLeaveMessage } from './utils/sendLeaveMessage';
+import { addRole } from './utils/addRole';
+import 'dotenv/config';
 
 const flags = [
   IntentsBitField.Flags.Guilds,

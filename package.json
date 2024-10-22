@@ -2,8 +2,9 @@
   "name": "ordinarybrobot",
   "version": "1.0.0",
   "main": "index.js",
-  "sourceType": "module",
   "scripts": {
+    "start": "ts-node --esm index.ts",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint --ignore-pattern node_modules --fix . && prettier . --write",
     "lint:ci": "eslint --ignore-pattern node_modules --no-fix --max-warnings=0 . && prettier . --check"
   },
@@ -15,6 +16,9 @@
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/PadBro/OrdinaryBroBot/issues"
+  },
+  "engines": {
+    "node": ">= 19.0.0 <20.0.0"
   },
   "homepage": "https://github.com/PadBro/OrdinaryBroBot#readme",
   "description": "",
@@ -28,6 +32,7 @@
     "eslint": "^8.57.1",
     "globals": "^15.11.0",
     "prettier": "3.3.3",
-    "typescript-eslint": "^8.10.0"
+    "ts-node": "^10.9.2",
+    "typescript-eslint": "^8.11.0"
   }
 }
