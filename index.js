@@ -1,5 +1,10 @@
 const { Client, Events, IntentsBitField } = require('discord.js');
-const { sendLeaveMessage, addRole, getCommands, deployCommands } = require('./utils/index');
+const {
+  sendLeaveMessage,
+  addRole,
+  getCommands,
+  deployCommands,
+} = require('./utils/index');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -16,25 +21,31 @@ intents.add(flags);
 const client = new Client({ intents: [intents] });
 client.commands = getCommands();
 
-client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
-	const command = interaction.client.commands.get(interaction.commandName);
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+  const command = interaction.client.commands.get(interaction.commandName);
 
-	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
-		return;
-	}
+  if (!command) {
+    console.error(`No command matching ${interaction.commandName} was found.`);
+    return;
+  }
 
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-		} else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-		}
-	}
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({
+        content: 'There was an error while executing this command!',
+        ephemeral: true,
+      });
+    } else {
+      await interaction.reply({
+        content: 'There was an error while executing this command!',
+        ephemeral: true,
+      });
+    }
+  }
 });
 
 client.once(Events.ClientReady, (readyClient) => {

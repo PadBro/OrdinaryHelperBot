@@ -4,22 +4,29 @@ const { getCommands } = require('./getCommands');
 dotenv.config();
 
 const deployCommands = async () => {
-	const commands = getCommands().map((command) => command.data.toJSON());
+  const commands = getCommands().map((command) => command.data.toJSON());
 
-	const rest = new REST().setToken(process.env.DISCORD_TOKEN);
+  const rest = new REST().setToken(process.env.DISCORD_TOKEN);
 
-	try {
-		console.log(`Started refreshing ${commands.length} application (/) commands.`);
+  try {
+    console.log(
+      `Started refreshing ${commands.length} application (/) commands.`,
+    );
 
-		const data = await rest.put(
-			Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
-			{ body: commands },
-		);
+    const data = await rest.put(
+      Routes.applicationGuildCommands(
+        process.env.CLIENT_ID,
+        process.env.GUILD_ID,
+      ),
+      { body: commands },
+    );
 
-		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
-	} catch (error) {
-		console.error(error);
-	}
-}
+    console.log(
+      `Successfully reloaded ${data.length} application (/) commands.`,
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-module.exports = { deployCommands }
+module.exports = { deployCommands };

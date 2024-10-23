@@ -4,8 +4,8 @@ const { getCommands } = require('./getCommands');
 const { deployCommands } = require('./deploy-commands');
 
 module.exports = {
-	sendLeaveMessage,
-	addRole,
-	getCommands,
-	deployCommands,
-}
+  sendLeaveMessage,
+  addRole,
+  getCommands,
+  deployCommands,
+};
