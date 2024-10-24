@@ -6,7 +6,7 @@ let faqs = [];
 try {
   faqs = require('../../configs/faq.json');
 } catch (e) {
-  console.log('[WARNING] No FAQs found.');
+  console.log(`[WARNING] No FAQs found. ${e}`);
 }
 
 const choices = faqs.map((faq) => ({ name: faq.name, value: faq.key }));
@@ -28,7 +28,7 @@ const command = {
     const faq = faqs.find((faq) => faq.key === category);
     if (!faq) {
       await interaction.reply(
-        'The quiestion was not found please try again later. If this error pressists please report to the staff team.',
+        'The question was not found please try again later. If this error pressists please report to the staff team.',
       );
     } else {
       await interaction.reply(faq.answere);
