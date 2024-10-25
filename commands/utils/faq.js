@@ -14,7 +14,7 @@ const choices = faqs.map((faq) => ({ name: faq.name, value: faq.key }));
 const command = {
   data: new SlashCommandBuilder()
     .setName('faq')
-    .setDescription('Answeres frequently asked questions')
+    .setDescription('Answers frequently asked questions')
     .addStringOption((option) =>
       option
         .setName('category')
@@ -31,7 +31,7 @@ const command = {
         'The question was not found please try again later. If this error pressists please report to the staff team.',
       );
     } else {
-      await interaction.reply(faq.answere);
+      await interaction.reply(faq.answer);
     }
   },
 };
