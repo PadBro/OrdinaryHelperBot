@@ -1,40 +1,28 @@
-const { Collection } = require('discord.js');
-const fs = require('node:fs');
-const path = require('node:path');
+import { Collection } from 'discord.js';
+import { readdirSync } from 'fs';
+import { join as joinPath } from 'path';
 
-const getCommands = () => {
+export const getCommands = async () => {
   const commands = new Collection();
-  const foldersPath = path.join(__dirname, '../commands');
-  const commandFolders = fs.readdirSync(foldersPath);
+  const foldersPath = joinPath(import.meta.dirname, '../commands');
+  const commandFolders = readdirSync(foldersPath);
 
   for (const folder of commandFolders) {
-    const commandsPath = path.join(foldersPath, folder);
-    const commandFiles = fs
-      .readdirSync(commandsPath)
-      .filter((file) => file.endsWith('.js'));
+    const commandsPath = joinPath(foldersPath, folder);
+    const commandFiles = readdirSync(commandsPath).filter((file) =>
+      file.endsWith('.js'),
+    );
     for (const file of commandFiles) {
-      const filePath = path.join(commandsPath, file);
-      const command = require(filePath);
-      if (Array.isArray(command)) {
-        command.forEach((singleCommand) => {
-          validateCommand(singleCommand, commands, filePath);
-        });
+      const filePath = joinPath(commandsPath, file);
+      const command = await import(filePath);
+      if ('data' in command && 'execute' in command) {
+        commands.set(command.data.name, command);
       } else {
-        validateCommand(command, commands, filePath);
+        console.log(
+          `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
+        );
       }
     }
   }
   return commands;
 };
-
-const validateCommand = (command, commands, filePath) => {
-  if ('data' in command && 'execute' in command) {
-    commands.set(command.data.name, command);
-  } else {
-    console.log(
-      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
-    );
-  }
-};
-
-module.exports = { getCommands };
