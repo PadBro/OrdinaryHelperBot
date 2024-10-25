@@ -15,7 +15,12 @@ export const getCommands = async () => {
     for (const file of commandFiles) {
       const filePath = joinPath(commandsPath, file);
       const command = await import(filePath);
-      if ('data' in command && 'execute' in command) {
+      if (
+        'data' in command &&
+        'execute' in command &&
+        command.data &&
+        command.execute
+      ) {
         commands.set(command.data.name, command);
       } else {
         console.log(
