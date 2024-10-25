@@ -8,7 +8,7 @@ try {
   const faqsJson = readFileSync(filePath);
   faqs = JSON.parse(faqsJson);
 } catch (e) {
-  console.log('[WARNING] No FAQs found.', e);
+  console.log(`[WARNING] No FAQs found. ${e}`);
 }
 
 const choices = faqs.map((faq) => ({ name: faq.name, value: faq.key }));
