@@ -35,7 +35,7 @@ export const execute = faqs.length
           'The question was not found. Please try again later. If this error persists, please report to the staff team.',
         );
       } else {
-        await interaction.reply(faq.answere);
+        await interaction.reply(faq.answer);
       }
     }
   : undefined;

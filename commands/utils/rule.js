@@ -35,7 +35,7 @@ export const execute = rules.length
           'The rule was not found please try again later. If this error pressists please report to the staff team.',
         );
       } else {
-        await interaction.reply(rule.answere);
+        await interaction.reply(rule.answer);
       }
     }
   : undefined;
