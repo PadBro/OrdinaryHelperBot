@@ -1,12 +1,12 @@
-const { EmbedBuilder } = require('discord.js');
-const dayjs = require('dayjs');
-const relativeTime = require('dayjs/plugin/relativeTime');
-const duration = require('dayjs/plugin/duration');
+import { EmbedBuilder } from 'discord.js';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime.js';
+import duration from 'dayjs/plugin/duration.js';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
-const sendLeaveMessage = (channel, member) => {
+export const sendLeaveMessage = (channel, member) => {
   const roles = member.roles.cache;
   const rolesString = roles.map((role) => role.name);
   const rolesStringFiltered = rolesString.filter((role) => role != '@everyone');
@@ -48,5 +48,3 @@ const sendLeaveMessage = (channel, member) => {
 
   channel.send({ embeds: [embed] });
 };
-
-module.exports = { sendLeaveMessage };

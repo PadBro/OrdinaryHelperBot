@@ -1,13 +1,11 @@
-const { Client, Events, IntentsBitField } = require('discord.js');
-const {
+import { Client, Events, IntentsBitField } from 'discord.js';
+import {
   sendLeaveMessage,
   addRole,
   getCommands,
   deployCommands,
-} = require('./utils/index');
-
-const dotenv = require('dotenv');
-dotenv.config();
+} from './utils/index.js';
+import 'dotenv/config';
 
 const flags = [
   IntentsBitField.Flags.Guilds,
@@ -19,7 +17,7 @@ const intents = new IntentsBitField();
 intents.add(flags);
 
 const client = new Client({ intents: [intents] });
-client.commands = getCommands();
+client.commands = await getCommands();
 
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;

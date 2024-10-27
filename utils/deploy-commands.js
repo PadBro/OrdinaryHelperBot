@@ -1,10 +1,10 @@
-const { REST, Routes } = require('discord.js');
-const dotenv = require('dotenv');
-const { getCommands } = require('./getCommands');
-dotenv.config();
+import { REST, Routes } from 'discord.js';
+import { getCommands } from './getCommands.js';
 
-const deployCommands = async () => {
-  const commands = getCommands().map((command) => command.data.toJSON());
+export const deployCommands = async () => {
+  const commands = (await getCommands()).map((command) =>
+    command.data.toJSON(),
+  );
 
   const rest = new REST().setToken(process.env.DISCORD_TOKEN);
 
@@ -28,5 +28,3 @@ const deployCommands = async () => {
     console.error(error);
   }
 };
-
-module.exports = { deployCommands };

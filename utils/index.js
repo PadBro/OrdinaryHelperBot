@@ -1,11 +1,6 @@
-const { sendLeaveMessage } = require('./sendLeaveMessage');
-const { addRole } = require('./addRole');
-const { getCommands } = require('./getCommands');
-const { deployCommands } = require('./deploy-commands');
+import { sendLeaveMessage } from './sendLeaveMessage.js';
+import { addRole } from './addRole.js';
+import { getCommands } from './getCommands.js';
+import { deployCommands } from './deploy-commands.js';
 
-module.exports = {
-  sendLeaveMessage,
-  addRole,
-  getCommands,
-  deployCommands,
-};
+export { sendLeaveMessage, addRole, getCommands, deployCommands };

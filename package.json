@@ -2,7 +2,7 @@
   "name": "ordinarybrobot",
   "version": "1.0.0",
   "main": "index.js",
-  "sourceType": "module",
+  "type": "module",
   "scripts": {
     "lint": "eslint --ignore-pattern node_modules --fix . && prettier . --write",
     "lint:ci": "eslint --ignore-pattern node_modules --no-fix --max-warnings=0 . && prettier . --check"
