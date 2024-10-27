@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, MessageFlags } from 'discord.js';
 import { readFileSync } from 'fs';
 import { join as joinPath } from 'path';
 
@@ -35,7 +35,10 @@ export const execute = faqs.length
           'The question was not found. Please try again later. If this error persists, please report to the staff team.',
         );
       } else {
-        await interaction.reply(faq.answer);
+        await interaction.reply({
+          content: faq.answer,
+          flags: [MessageFlags.SupressEmbeds]
+        });
       }
     }
   : undefined;

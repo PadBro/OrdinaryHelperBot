@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, MessageFlags } from 'discord.js';
 import { readFileSync } from 'fs';
 import { join as joinPath } from 'path';
 
@@ -35,7 +35,10 @@ export const execute = rules.length
           'The rule was not found please try again later. If this error pressists please report to the staff team.',
         );
       } else {
-        await interaction.reply(rule.answer);
+        await interaction.reply({
+          content: rule.answer,
+          flags: [MessageFlags.SuppressEmbeds]
+        });
       }
     }
   : undefined;
