@@ -37,7 +37,7 @@ export const execute = faqs.length
       } else {
         await interaction.reply({
           content: faq.answer,
-          flags: [MessageFlags.SupressEmbeds]
+          flags: [MessageFlags.SupressEmbeds],
         });
       }
     }

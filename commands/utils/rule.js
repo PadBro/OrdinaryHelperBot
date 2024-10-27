@@ -37,7 +37,7 @@ export const execute = rules.length
       } else {
         await interaction.reply({
           content: rule.answer,
-          flags: [MessageFlags.SuppressEmbeds]
+          flags: [MessageFlags.SuppressEmbeds],
         });
       }
     }
