@@ -1,9 +1,12 @@
-import { SlashCommandBuilder } from 'discord.js'; 
-
+import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js'; 
+import { executePurge } from './purgeFunctions/executePurge.js';
+import { previewPurge } from './purgeFunctions/previewPurge.js';
+import { executeOrder66 } from './purgeFunctions/executeOrder66.js';
 
 export const data = new SlashCommandBuilder()
 	.setName('purge')
 	.setDescription('Monthly Member Purge')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
     .addSubcommand(subcommand =>
         subcommand
             .setName('preview')
@@ -27,9 +30,24 @@ export const data = new SlashCommandBuilder()
 
 
 export const execute = async(interaction) => {
-    if (interaction.options.getSubcommand() === "remove=linked") {
-        interaction.reply("removeLinked");
-    } else {
-        interaction.reply("removeMember")
+    const subcommand = interaction.options.getSubcommand();
+    switch(subcommand) {
+        case 'preview':
+            previewPurge(interaction);
+            break;
+        case 'execute':
+            executePurge(interaction);
+            break;
+        case 'remove-member':
+            // not implemented yet
+            break;
+        case 'remove-linked':
+            // not implemented yet
+            break;
+        case 'order66':
+            executeOrder66(interaction);
+            break;
+        default:
+            interaction.reply('command not found');
     }
 }
