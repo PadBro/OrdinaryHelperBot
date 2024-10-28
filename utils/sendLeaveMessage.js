@@ -8,8 +8,7 @@ dayjs.extend(relativeTime);
 
 export const sendLeaveMessage = (channel, member) => {
   const roles = member.roles.cache;
-  const rolesString = roles.map((role) => role);
-  const rolesStringFiltered = rolesString.filter(
+  const filteredRoles = roles.filter(
     (role) => role.name != '@everyone',
   );
 
@@ -38,8 +37,8 @@ export const sendLeaveMessage = (channel, member) => {
       { name: '\u200B', value: '\u200B' },
       {
         name: 'Roles:',
-        value: rolesStringFiltered.length
-          ? rolesStringFiltered.join(', ')
+        value: filteredRoles.size > 0
+          ? filteredRoles.toJSON().join(', ')
           : '---',
         inline: true,
       },
