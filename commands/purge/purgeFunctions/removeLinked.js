@@ -6,5 +6,5 @@ export const removeLinked = async (interaction) => {
     process.env.LINKED_ROLE_ID,
   );
   memberRole.members.map((m) => m.roles.remove(linkedRole));
-  await interaction.reply('Removed all Linked Roles');
+  // await interaction.reply('Removed all Linked Roles');
 };

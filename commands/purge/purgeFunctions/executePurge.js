@@ -1,44 +1,45 @@
-import { PermissionFlagsBits, SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js'; 
-
+import { PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import { confirmAction } from '../../utils/confirmAction.js';
+import { removeLinked } from './removeLinked.js';
+import { getMembersToPurge } from './getMembersToPurge.js';
 
 export const executePurge = async (interaction) => {
-    interaction.guild
-        if (!interaction.memberPermissions.has(PermissionFlagsBits.BanMembers)) {
-            await interaction.reply('insufficient permission');
-            return;
-        }
+  interaction.guild;
+  if (!interaction.memberPermissions.has(PermissionFlagsBits.BanMembers)) {
+    await interaction.reply('insufficient permission');
+    return;
+  }
 
-        const confirm = new ButtonBuilder()
-			.setCustomId('confirm')
-			.setLabel('Confirm Purge')
-			.setStyle(ButtonStyle.Danger);
+  if (
+    !(await confirmAction(
+      interaction,
+      'Do you really want to purge?',
+      'Confirm Purge',
+    ))
+  ) {
+    return;
+  }
 
-		const cancel = new ButtonBuilder()
-			.setCustomId('cancel')
-			.setLabel('Cancel')
-			.setStyle(ButtonStyle.Secondary);
+  const memberRole = interaction.guild.roles.cache.get(
+    process.env.MEMBER_ROLE_ID,
+  );
+  const filteredMembers = await getMembersToPurge(interaction);
+  filteredMembers.map((m) => m.roles.remove(memberRole));
 
-        const row = new ActionRowBuilder()
-			.addComponents(confirm, cancel);
+  await removeLinked(interaction);
 
-        const response = await interaction.reply({
-            content: `Are you sure you want to purge?`,
-            components: [row],
-            ephemeral: true
-        })
-        const collectorFilter = i => i.user.id === interaction.user.id;
+  const embed = new EmbedBuilder()
+    .setTitle('Member Purge')
+    .setDescription('Executed Purge')
+    .addFields({
+      name: 'Purged Members',
+      value: `${filteredMembers?.map((member) => `<@${member.id}>`).join(', ') || '---'}`,
+    })
+    .setTimestamp();
 
-        try {
-            const confirmation = await response.awaitMessageComponent({ filter: collectorFilter, time: 60_000 });
-
-            if (confirmation.customId === 'confirm') {
-                // purge();
-                await confirmation.update({ content: 'purge executed', components: [] });
-                await interaction.followUp({ content: 'purged', components: [], ephemeral: false });
-            } else if (confirmation.customId === 'cancel') {
-                await confirmation.update({ content: 'Action cancelled', components: [], ephemeral: true });
-            }
-        } catch (e) {
-            await interaction.editReply({ content: 'Confirmation not received within 1 minute, cancelling', components: [] });
-        }
-}
+  await interaction.channel.send({
+    embeds: [embed],
+    components: [],
+    ephemeral: false,
+  });
+};
