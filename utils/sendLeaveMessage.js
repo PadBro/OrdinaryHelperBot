@@ -8,8 +8,7 @@ dayjs.extend(relativeTime);
 
 export const sendLeaveMessage = (channel, member) => {
   const roles = member.roles.cache;
-  const rolesString = roles.map((role) => role.name);
-  const rolesStringFiltered = rolesString.filter((role) => role != '@everyone');
+  const filteredRoles = roles.filter((role) => role.name != '@everyone');
 
   let embedColor = 'FF0000';
   if (roles.find((role) => role.id == process.env.MEMBER_ROLE_ID)) {
@@ -36,9 +35,8 @@ export const sendLeaveMessage = (channel, member) => {
       { name: '\u200B', value: '\u200B' },
       {
         name: 'Roles:',
-        value: rolesStringFiltered.length
-          ? rolesStringFiltered.join(', ')
-          : '---',
+        value:
+          filteredRoles.size > 0 ? filteredRoles.toJSON().join(', ') : '---',
         inline: true,
       },
       { name: 'Time on Server:', value: `${duration}`, inline: true },
