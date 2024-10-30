@@ -1,4 +1,6 @@
 import { Client, Events, IntentsBitField } from 'discord.js';
+import { sequelize } from './utils/database.js';
+import * as models from './models/faq.js';
 import {
   sendLeaveMessage,
   addRole,
@@ -6,6 +8,7 @@ import {
   deployCommands,
 } from './utils/index.js';
 import 'dotenv/config';
+
 
 const flags = [
   IntentsBitField.Flags.Guilds,
@@ -62,4 +65,18 @@ client.on('guildMemberAdd', (member) => {
 });
 
 deployCommands();
+
+try {
+  await sequelize.authenticate();
+  console.log('Connection has been established successfully.');
+} catch (error) {
+  console.error('Unable to connect to the database:', error);
+}
+
+for (const model in models) {
+  models[model](sequelize).sync()
+}
+
+faq(sequelize).sync()
+
 client.login(process.env.DISCORD_TOKEN);
