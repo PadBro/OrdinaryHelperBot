@@ -1,18 +1,18 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../utils/database.js';
 
-export const faq = sequelize.define('faq', {
+export const rule = sequelize.define('rule', {
   id: {
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
     type: DataTypes.INTEGER,
   },
-  question: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  answer: {
+  rule: {
     type: DataTypes.STRING,
     allowNull: false,
   },

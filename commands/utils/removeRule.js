@@ -1,14 +1,15 @@
-import { SlashCommandBuilder, MessageFlags } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { rule } from '../../models/rule.js';
 import { Op } from 'sequelize';
 
 export const data = new SlashCommandBuilder()
-  .setName('rule')
-  .setDescription('Displays a rule')
+  .setName('rule-remove')
+  .setDescription('Remove a frequently asked question')
+  .setDefaultMemberPermissions(PermissionFlagsBits.ViewAuditLog)
   .addStringOption((option) =>
     option
       .setName('rule')
-      .setDescription('The rule to display')
+      .setDescription('The rule category')
       .setRequired(true)
       .setAutocomplete(true),
   );
@@ -24,7 +25,7 @@ export const autocomplete = async (interaction) => {
     },
   });
   await interaction.respond(
-    rules.map((rule) => ({ name: rule.name, value: `${rule.id}` })),
+    rules.map((rule) => ({ name: rule.rule, value: `${rule.id}` })),
   );
 };
 
@@ -32,24 +33,23 @@ export const execute = async (interaction) => {
   const ruleId = interaction.options.getString('rule');
 
   try {
-    const requestedRule = await rule.findOne({
+    const result = await rule.destroy({
       where: {
         id: ruleId,
       },
     });
-    if (!requestedRule) {
+    if (result === 0) {
       await interaction.reply({
-        content:
-          'The rule was not found please try again later. If this error pressists please report to the staff team.',
+        content: 'The rule was not found.',
         ephemeral: true,
-        flags: [MessageFlags.SuppressEmbeds],
       });
+
       return;
     }
 
     await interaction.reply({
-      content: requestedRule.rule,
-      flags: [MessageFlags.SuppressEmbeds],
+      content: 'The rule has been removed.',
+      ephemeral: true,
     });
   } catch (e) {
     console.error(e);

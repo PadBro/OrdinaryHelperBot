@@ -1,10 +1,11 @@
-import { SlashCommandBuilder, MessageFlags } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { faq } from '../../models/faq.js';
 import { Op } from 'sequelize';
 
 export const data = new SlashCommandBuilder()
-  .setName('faq')
-  .setDescription('Answers frequently asked questions')
+  .setName('faq-remove')
+  .setDescription('Remove a frequently asked question')
+  .setDefaultMemberPermissions(PermissionFlagsBits.ViewAuditLog)
   .addStringOption((option) =>
     option
       .setName('question')
@@ -32,24 +33,23 @@ export const execute = async (interaction) => {
   const faqId = interaction.options.getString('question');
 
   try {
-    const askedFaq = await faq.findOne({
+    const result = await faq.destroy({
       where: {
         id: faqId,
       },
     });
-    if (!askedFaq) {
+    if (result === 0) {
       await interaction.reply({
-        content:
-          'The question was not found. Please try again later. If this error persists, please report to the staff team.',
+        content: 'The FAQ was not found.',
         ephemeral: true,
-        flags: [MessageFlags.SuppressEmbeds],
       });
+
       return;
     }
 
     await interaction.reply({
-      content: askedFaq.answer,
-      flags: [MessageFlags.SuppressEmbeds],
+      content: 'The FAQ has been removed.',
+      ephemeral: true,
     });
   } catch (e) {
     console.error(e);

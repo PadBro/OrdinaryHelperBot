@@ -1,5 +1,4 @@
-import { faq } from "./faq";
+import { faq } from './faq.js';
+import { rule } from './rule.js';
 
-export default {
-	faq
-}
+export default [faq, rule];

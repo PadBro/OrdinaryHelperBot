@@ -2,7 +2,7 @@ services:
   mariadb:
     image: mariadb:10.6.18
     ports:
-      - "3306:3306"
+      - '3306:3306'
     environment:
       MARIADB_USER: ${DB_USER}
       MARIADB_PASSWORD: ${DB_PASSWORD}
