@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, MessageFlags } from 'discord.js';
+import { SlashCommandBuilder, MessageFlags, EmbedBuilder } from 'discord.js';
 import { faq } from '../../models/faq.js';
 import { Op } from 'sequelize';
 
@@ -47,9 +47,13 @@ export const execute = async (interaction) => {
       return;
     }
 
+    const embed = new EmbedBuilder()
+      .setColor('#f0833a')
+      .setTitle(askedFaq.question)
+      .setDescription(askedFaq.answer);
+
     await interaction.reply({
-      content: askedFaq.answer,
-      flags: [MessageFlags.SuppressEmbeds],
+      embeds: [embed],
     });
   } catch (e) {
     console.error(e);

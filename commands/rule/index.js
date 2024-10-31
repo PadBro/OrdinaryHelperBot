@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, MessageFlags } from 'discord.js';
+import { SlashCommandBuilder, MessageFlags, EmbedBuilder } from 'discord.js';
 import { rule } from '../../models/rule.js';
 import { Op } from 'sequelize';
 
@@ -22,6 +22,7 @@ export const autocomplete = async (interaction) => {
         [Op.like]: `${inputValue}%`,
       },
     },
+    order: [['name', 'ASC']],
   });
   await interaction.respond(
     rules.map((rule) => ({ name: rule.name, value: `${rule.id}` })),
@@ -47,9 +48,13 @@ export const execute = async (interaction) => {
       return;
     }
 
+    const embed = new EmbedBuilder()
+      .setColor('#f0833a')
+      .setTitle(requestedRule.name)
+      .setDescription(requestedRule.rule);
+
     await interaction.reply({
-      content: requestedRule.rule,
-      flags: [MessageFlags.SuppressEmbeds],
+      embeds: [embed],
     });
   } catch (e) {
     console.error(e);

@@ -7,6 +7,7 @@ import {
   addRole,
   getCommands,
   deployCommands,
+  getModals,
 } from './utils/index.js';
 
 const flags = [
@@ -20,6 +21,7 @@ intents.add(flags);
 
 const client = new Client({ intents: [intents] });
 client.commands = await getCommands();
+client.modals = await getModals();
 
 client.on(Events.InteractionCreate, async (interaction) => {
   if (interaction.isChatInputCommand()) {
@@ -62,6 +64,31 @@ client.on(Events.InteractionCreate, async (interaction) => {
       await command.autocomplete(interaction);
     } catch (error) {
       console.error(error);
+    }
+  } else if (interaction.isModalSubmit()) {
+    console.log(interaction.client.modals);
+    const modal = interaction.client.modals.get(interaction.customId);
+
+    if (!modal) {
+      console.error(`No modal matching ${interaction.customId} was found.`);
+      return;
+    }
+
+    try {
+      await modal.handler(interaction);
+    } catch (error) {
+      console.error(error);
+      if (interaction.replied || interaction.deferred) {
+        await interaction.followUp({
+          content: 'There was an error while executing this command!',
+          ephemeral: true,
+        });
+      } else {
+        await interaction.reply({
+          content: 'There was an error while executing this command!',
+          ephemeral: true,
+        });
+      }
     }
   }
 });
