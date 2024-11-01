@@ -4,7 +4,7 @@ import { hasPermission } from '../hasPermission.js';
 import { confirmAction } from '../confirmAction.js';
 
 export const removeMembers = async (interaction) => {
-  if (!hasPermission(interaction, PermissionFlagsBits.BanMembers)) {
+  if (!(await hasPermission(interaction, PermissionFlagsBits.BanMembers))) {
     return;
   }
 

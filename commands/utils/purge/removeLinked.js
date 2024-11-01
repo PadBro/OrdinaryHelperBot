@@ -4,7 +4,7 @@ import { removeLinkedRoles } from './removeLinkedRoles.js';
 import { confirmAction } from '../confirmAction.js';
 
 export const removeLinked = async (interaction) => {
-  if (!hasPermission(interaction, PermissionFlagsBits.BanMembers)) {
+  if (!(await hasPermission(interaction, PermissionFlagsBits.BanMembers))) {
     return;
   }
 

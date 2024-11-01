@@ -5,7 +5,7 @@ import { removeMemberRoles } from './removeMemberRoles.js';
 import { removeLinkedRoles } from './removeLinkedRoles.js';
 
 export const executePurge = async (interaction) => {
-  if (!hasPermission(interaction, PermissionFlagsBits.BanMembers)) {
+  if (!(await hasPermission(interaction, PermissionFlagsBits.BanMembers))) {
     return;
   }
 
