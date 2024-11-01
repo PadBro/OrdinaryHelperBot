@@ -4,7 +4,7 @@ import { join as joinPath } from 'path';
 
 let rules = [];
 try {
-  const filePath = joinPath(import.meta.dirname, '../../configs/rule.json');
+  const filePath = joinPath(import.meta.dirname, '../configs/rule.json');
   const rulesJson = readFileSync(filePath);
   rules = JSON.parse(rulesJson);
 } catch (e) {

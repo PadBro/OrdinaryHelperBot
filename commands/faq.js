@@ -4,7 +4,7 @@ import { join as joinPath } from 'path';
 
 let faqs = [];
 try {
-  const filePath = joinPath(import.meta.dirname, '../../configs/faq.json');
+  const filePath = joinPath(import.meta.dirname, '../configs/faq.json');
   const faqsJson = readFileSync(filePath);
   faqs = JSON.parse(faqsJson);
 } catch (e) {
