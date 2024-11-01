@@ -1,7 +1,8 @@
 import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
-import { executePurge } from './purgeFunctions/executePurge.js';
-import { previewPurge } from './purgeFunctions/previewPurge.js';
-import { removeLinked } from './purgeFunctions/removeLinked.js';
+import { executePurge } from './utils/purge/executePurge.js';
+import { previewPurge } from './utils/purge/previewPurge.js';
+import { removeLinked } from './utils/purge/removeLinked.js';
+import { removeMembers } from './utils/purge/removeMembers.js';
 
 export const data = new SlashCommandBuilder()
   .setName('purge')
@@ -26,9 +27,6 @@ export const data = new SlashCommandBuilder()
     subcommand
       .setName('remove-linked')
       .setDescription('remove linked role from every member'),
-  )
-  .addSubcommand((subcommand) =>
-    subcommand.setName('order66').setDescription('remove every member'),
   );
 
 export const execute = async (interaction) => {
@@ -41,15 +39,10 @@ export const execute = async (interaction) => {
       executePurge(interaction);
       break;
     case 'remove-member':
-      // not implemented yet
+      removeMembers(interaction);
       break;
     case 'remove-linked':
       removeLinked(interaction);
-      await interaction.reply('Removed all Linked Roles');
-      break;
-    case 'order66':
-      await interaction.reply('not yet fully implemented');
-      // executeOrder66(interaction);
       break;
     default:
       interaction.reply('command not found');

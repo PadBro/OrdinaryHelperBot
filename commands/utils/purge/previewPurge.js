@@ -5,7 +5,7 @@ export const previewPurge = async (interaction) => {
 
   await interaction.reply({
     content:
-      filteredMembers.map((member) => `<@${member.id}>`).join(', ') + 'j',
+      `${filteredMembers?.map((member) => `${member}`).join(', ') || '---'}`,
     ephemeral: true,
   });
 };
