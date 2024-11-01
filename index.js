@@ -9,6 +9,11 @@ import {
   deployCommands,
   getModals,
 } from './utils/index.js';
+import {
+  modalHandler,
+  commandsHandler,
+  autocompleteHandler,
+} from './utils/interactionHandler/index.js';
 
 const flags = [
   IntentsBitField.Flags.Guilds,
@@ -25,71 +30,11 @@ client.modals = await getModals();
 
 client.on(Events.InteractionCreate, async (interaction) => {
   if (interaction.isChatInputCommand()) {
-    const command = interaction.client.commands.get(interaction.commandName);
-
-    if (!command) {
-      console.error(
-        `No command matching ${interaction.commandName} was found.`,
-      );
-      return;
-    }
-
-    try {
-      await command.execute(interaction);
-    } catch (error) {
-      console.error(error);
-      if (interaction.replied || interaction.deferred) {
-        await interaction.followUp({
-          content: 'There was an error while executing this command!',
-          ephemeral: true,
-        });
-      } else {
-        await interaction.reply({
-          content: 'There was an error while executing this command!',
-          ephemeral: true,
-        });
-      }
-    }
+    commandsHandler(interaction);
   } else if (interaction.isAutocomplete()) {
-    const command = interaction.client.commands.get(interaction.commandName);
-
-    if (!command) {
-      console.error(
-        `No command matching ${interaction.commandName} was found.`,
-      );
-      return;
-    }
-
-    try {
-      await command.autocomplete(interaction);
-    } catch (error) {
-      console.error(error);
-    }
+    autocompleteHandler(interaction);
   } else if (interaction.isModalSubmit()) {
-    console.log(interaction.client.modals);
-    const modal = interaction.client.modals.get(interaction.customId);
-
-    if (!modal) {
-      console.error(`No modal matching ${interaction.customId} was found.`);
-      return;
-    }
-
-    try {
-      await modal.handler(interaction);
-    } catch (error) {
-      console.error(error);
-      if (interaction.replied || interaction.deferred) {
-        await interaction.followUp({
-          content: 'There was an error while executing this command!',
-          ephemeral: true,
-        });
-      } else {
-        await interaction.reply({
-          content: 'There was an error while executing this command!',
-          ephemeral: true,
-        });
-      }
-    }
+    modalHandler(interaction);
   }
 });
 

@@ -23,9 +23,10 @@ export const autocomplete = async (interaction) => {
         [Op.like]: `${inputValue}%`,
       },
     },
+    order: [['name', 'ASC']],
   });
   await interaction.respond(
-    rules.map((rule) => ({ name: rule.rule, value: `${rule.id}` })),
+    rules.map((rule) => ({ name: rule.name, value: `${rule.id}` })),
   );
 };
 
