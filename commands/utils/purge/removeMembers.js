@@ -4,7 +4,6 @@ import { hasPermission } from '../hasPermission.js';
 import { confirmAction } from '../confirmAction.js';
 
 export const removeMembers = async (interaction) => {
-
   if (!hasPermission(interaction, PermissionFlagsBits.BanMembers)) {
     return;
   }
@@ -19,10 +18,7 @@ export const removeMembers = async (interaction) => {
     return;
   }
 
-
   const filteredMembers = await removeMemberRoles(interaction);
-
-
 
   const embed = new EmbedBuilder()
     .setTitle('Member Remove')
@@ -36,7 +32,6 @@ export const removeMembers = async (interaction) => {
   await interaction.channel.send({
     embeds: [embed],
   });
-
 
   return filteredMembers;
 };

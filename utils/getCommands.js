@@ -9,7 +9,9 @@ export const getCommands = async () => {
   const commandFolders = readdirSync(foldersPath);
 
   for (const folder of commandFolders) {
-    if (folder.startsWith('utils')) {continue;}
+    if (folder.startsWith('utils')) {
+      continue;
+    }
     const commandsPath = joinPath(foldersPath, folder);
     if (folder.endsWith('.js')) {
       await loadCommand(commandsPath, commands);
@@ -26,18 +28,18 @@ export const getCommands = async () => {
   return commands;
 };
 
-
 const loadCommand = async (filePath, commands) => {
   const command = await import(pathToFileURL(filePath));
-  if ('data' in command &&
+  if (
+    'data' in command &&
     'execute' in command &&
     command.data &&
-    command.execute) {
+    command.execute
+  ) {
     commands.set(command.data.name, command);
   } else {
     console.log(
-      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
     );
   }
-}
-
+};

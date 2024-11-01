@@ -1,4 +1,3 @@
-
 export const removeLinkedRoles = async (interaction) => {
   const memberRole = interaction.guild.roles.cache.get(
     process.env.MEMBER_ROLE_ID,
@@ -7,4 +6,4 @@ export const removeLinkedRoles = async (interaction) => {
     process.env.LINKED_ROLE_ID,
   );
   memberRole.members.forEach((m) => m.roles.remove(linkedRole));
-}
+};

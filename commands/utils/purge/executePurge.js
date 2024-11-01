@@ -21,7 +21,6 @@ export const executePurge = async (interaction) => {
 
   const filteredMembers = await removeMemberRoles(interaction);
 
-
   await removeLinkedRoles(interaction);
 
   const embed = new EmbedBuilder()

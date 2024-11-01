@@ -1,4 +1,4 @@
-import { getMembersToPurge } from "./getMembersToPurge.js";
+import { getMembersToPurge } from './getMembersToPurge.js';
 
 export const removeMemberRoles = async (interaction) => {
   const memberRole = interaction.guild.roles.cache.get(
@@ -6,5 +6,5 @@ export const removeMemberRoles = async (interaction) => {
   );
   const filteredMembers = await getMembersToPurge(interaction);
   filteredMembers.forEach((m) => m.roles.remove(memberRole));
-  return filteredMembers
-}
+  return filteredMembers;
+};
