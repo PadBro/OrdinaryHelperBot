@@ -5,6 +5,6 @@ export const removeMemberRoles = async (interaction) => {
     process.env.MEMBER_ROLE_ID,
   );
   const filteredMembers = await getMembersToPurge(interaction);
-  filteredMembers.forEach((m) => m.roles.remove(memberRole));
+  filteredMembers.forEach((member) => member.roles.remove(memberRole));
   return filteredMembers;
 };

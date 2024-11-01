@@ -9,19 +9,39 @@ export const data = new SlashCommandBuilder()
   .setDescription('Monthly Member Purge')
   .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
   .addSubcommand((subcommand) =>
-    subcommand.setName('preview').setDescription('preview purge'),
+    subcommand
+      .setName('preview')
+      .setDescription('preview purge')
+      .addIntegerOption((option) =>
+        option
+          .setName('days')
+          .setDescription('Number of days to preview')
+          .setMinValue(1),
+      ),
   )
   .addSubcommand((subcommand) =>
     subcommand
       .setName('execute')
       .setDescription(
         'execute purge (remove inactive member roles and linked roles)',
+      )
+      .addIntegerOption((option) =>
+        option
+          .setName('days')
+          .setDescription('Number of days to purge')
+          .setMinValue(1),
       ),
   )
   .addSubcommand((subcommand) =>
     subcommand
       .setName('remove-member')
-      .setDescription('remove member role from inactive members'),
+      .setDescription('remove member role from inactive members')
+      .addIntegerOption((option) =>
+        option
+          .setName('days')
+          .setDescription('Number of days to remove members')
+          .setMinValue(1),
+      ),
   )
   .addSubcommand((subcommand) =>
     subcommand
