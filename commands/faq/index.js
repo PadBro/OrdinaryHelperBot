@@ -58,7 +58,7 @@ export const execute = async (interaction) => {
   } catch (e) {
     console.error(e);
     await interaction.reply({
-      content: `An error ocoured while retriving the FAQ entry. Please try again later. If this error persists, please report to the staff team.`,
+      content: `An error occurred while retriving the FAQ entry. Please try again later. If this error persists, please report to the staff team.`,
       ephemeral: true,
     });
   }

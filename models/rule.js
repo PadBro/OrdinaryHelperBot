@@ -8,6 +8,20 @@ export const rule = sequelize.define('rule', {
     primaryKey: true,
     type: DataTypes.INTEGER,
   },
+  number: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      isInt: {
+        args: true,
+        msg: 'number must be a number',
+      },
+      min: {
+        args: 1,
+        msg: 'number must be greater or equal than 1',
+      },
+    },
+  },
   name: {
     type: DataTypes.STRING(100),
     allowNull: false,
