@@ -48,7 +48,7 @@ export const handler = async (interaction) => {
     } else {
       console.error(e);
       await interaction.reply({
-        content: `An error ocoured while creating the FAQ entry. Please try again later. If this error persists, please report to the staff team.`,
+        content: `An error occurred while creating the FAQ entry. Please try again later. If this error persists, please report to the staff team.`,
         ephemeral: true,
       });
     }

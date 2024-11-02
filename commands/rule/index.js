@@ -22,10 +22,13 @@ export const autocomplete = async (interaction) => {
         [Op.like]: `${inputValue}%`,
       },
     },
-    order: [['name', 'ASC']],
+    order: [['number', 'ASC']],
   });
   await interaction.respond(
-    rules.map((rule) => ({ name: rule.name, value: `${rule.id}` })),
+    rules.map((rule) => ({
+      name: `${rule.number}. ${rule.name}`,
+      value: `${rule.id}`,
+    })),
   );
 };
 
@@ -41,7 +44,7 @@ export const execute = async (interaction) => {
     if (!requestedRule) {
       await interaction.reply({
         content:
-          'The rule was not found please try again later. If this error pressists please report to the staff team.',
+          'The rule was not found please try again later. If this error persists, please report to the staff team.',
         ephemeral: true,
         flags: [MessageFlags.SuppressEmbeds],
       });
@@ -59,7 +62,7 @@ export const execute = async (interaction) => {
   } catch (e) {
     console.error(e);
     await interaction.reply({
-      content: `An error ocoured while retriving the rule entry. Please try again later. If this error persists, please report to the staff team.`,
+      content: `An error occurred while retrieving the rule entry. Please try again later. If this error persists, please report to the staff team.`,
       ephemeral: true,
     });
   }

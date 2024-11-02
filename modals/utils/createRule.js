@@ -10,6 +10,11 @@ const modal = new ModalBuilder()
   .setCustomId('createRule')
   .setTitle('Create rule');
 
+const numberInput = new TextInputBuilder()
+  .setCustomId('number')
+  .setLabel('Rule number:')
+  .setStyle(TextInputStyle.Short);
+
 const questionInput = new TextInputBuilder()
   .setCustomId('name')
   .setLabel('Name:')
@@ -20,19 +25,21 @@ const answerInput = new TextInputBuilder()
   .setLabel('Rule:')
   .setStyle(TextInputStyle.Paragraph);
 
+const numberActionRow = new ActionRowBuilder().addComponents(numberInput);
 const questionActionRow = new ActionRowBuilder().addComponents(questionInput);
 const answerActionRow = new ActionRowBuilder().addComponents(answerInput);
 
-modal.addComponents(questionActionRow, answerActionRow);
+modal.addComponents(numberActionRow, questionActionRow, answerActionRow);
 
 export { modal };
 
 export const handler = async (interaction) => {
   const name = interaction.fields.getTextInputValue('name');
   const rule = interaction.fields.getTextInputValue('rule');
+  const number = parseInt(interaction.fields.getTextInputValue('number'));
 
   try {
-    await ruleModel.create({ name, rule });
+    await ruleModel.create({ name, rule, number });
 
     await interaction.reply({
       content: `The rule "${name}" was created.`,
@@ -48,7 +55,7 @@ export const handler = async (interaction) => {
     } else {
       console.error(e);
       await interaction.reply({
-        content: `An error ocoured while creating the rule entry. Please try again later. If this error persists, please report to the staff team.`,
+        content: `An error occurred while creating the rule entry. Please try again later. If this error persists, please report to the staff team.`,
         ephemeral: true,
       });
     }
