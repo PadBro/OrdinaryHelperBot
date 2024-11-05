@@ -44,7 +44,7 @@ export const confirmAction = async (
       });
       return false;
     }
-  } catch (e) {
+  } catch {
     await interaction.editReply({
       content: 'Confirmation not received within 1 minute, cancelling',
       components: [],
