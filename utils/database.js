@@ -7,6 +7,6 @@ export const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: 'mariadb',
-    logging: process.env.ENVIRONMENT !== 'prod',
+    logging: process.env.ENVIRONMENT !== 'prod' ? console.log : false,
   },
 );
