@@ -46,24 +46,42 @@ const addReactionRole = async (interaction) => {
   const discordChannelLinkBase = 'https://discord.com/channels/'
   const emojiRegex = /^(\p{Emoji})$/u
   const discordEmojiRegex = /^<.+:([0-9]+)>$/
+  let reactionEmoji = null;
 
   const messageLink = interaction.options.getString('message');
   const emoji = interaction.options.getString('emoji');
-  let reactionEmoji = null;
+
+  if (!messageLink.includes(discordChannelLinkBase)) {
+    interaction.reply('not discord channel link');
+    return
+  }
+
+  const [guildId, channelId, messageId] = messageLink.replace(discordChannelLinkBase, '').split('/')
+  console.log(guildId, channelId, messageId)
+  if (guildId !== interaction.guild.id) {
+    interaction.reply('not from right server');
+    return
+  }
+
+  const channel = await interaction.guild.channels.fetch(channelId)
+  if (!channel) {
+    interaction.reply('Channel not found');
+    return
+  }
+  const message = await channel.messages.fetch(messageId)
+  if (!message) {
+    interaction.reply('Message not found');
+    return
+  }
+  console.log(channel)
+  console.log(message)
 
   if (emojiRegex.test(emoji)) {
     reactionEmoji = emoji
   }
 
   const match = emoji.match(discordEmojiRegex);
-  console.log(emoji)
-  console.log(match[1])
-  interaction.guild.emojis.cache.find(guildEmoji => {
-    console.log(guildEmoji)
-    return guildEmoji.id === `${match[1]}`
-  })
   if (!reactionEmoji && match) {
-
     const serverEmoji = interaction.guild.emojis.cache.find(guildEmoji => guildEmoji.id === `${match[1]}`)
     if (serverEmoji) {
       reactionEmoji = serverEmoji.id;
@@ -71,29 +89,11 @@ const addReactionRole = async (interaction) => {
   }
 
   if (!reactionEmoji) {
-    interaction.reply('not found');
+    interaction.reply('emoji not found');
     return
   }
 
   const reply = await interaction.reply({content: 'found', fetchReply: true});
   reply.react(reactionEmoji)
   return;
-
-
-
-  // if (!messageLink.includes(discordChannelLinkBase)) {
-  //   return
-  // }
-
-  // const [guildId, channelId, messageId] = messageLink.replace(discordChannelLinkBase, '').split('/')
-  // console.log(guildId, channelId, messageId)
-  // if (guildId !== process.env.GUILD_ID) {
-  //   return
-  // }
-
-  // const channel = await interaction.guild.channels.fetch(channelId)
-  // console.log(channel)
-
-  // const message = await channel.messages.fetch(messageId)
-  // console.log(message)
 }
