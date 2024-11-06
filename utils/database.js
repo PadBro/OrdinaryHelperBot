@@ -1,4 +1,5 @@
 import { Sequelize } from 'sequelize';
+import Logger from './logger.js';
 
 export const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -7,6 +8,6 @@ export const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: 'mariadb',
-    logging: process.env.ENVIRONMENT !== 'prod' ? console.log : false,
-  },
+    logging: process.env.ENVIRONMENT !== 'prod' ? Logger.debug : false,
+  }
 );

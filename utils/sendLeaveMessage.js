@@ -13,7 +13,7 @@ export const sendLeaveMessage = (channel, member) => {
   let embedColor = 'FF0000';
   if (roles.find((role) => role.id == process.env.MEMBER_ROLE_ID)) {
     const memberRole = member.guild.roles.cache.find(
-      (role) => role.id == process.env.MEMBER_ROLE_ID,
+      (role) => role.id == process.env.MEMBER_ROLE_ID
     );
     embedColor = memberRole.hexColor;
   }
@@ -39,7 +39,7 @@ export const sendLeaveMessage = (channel, member) => {
           filteredRoles.size > 0 ? filteredRoles.toJSON().join(', ') : '---',
         inline: true,
       },
-      { name: 'Time on Server:', value: `${duration}`, inline: true },
+      { name: 'Time on Server:', value: `${duration}`, inline: true }
     )
     .setThumbnail(member.user.avatarURL())
     .setTimestamp();

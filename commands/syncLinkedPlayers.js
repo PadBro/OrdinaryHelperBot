@@ -5,14 +5,14 @@ import { writeFileSync, unlinkSync } from 'fs';
 export const data = new SlashCommandBuilder()
   .setName('sync-linked-players')
   .setDescription(
-    'Syncs the LinkedPlayers.json with the members on the server!',
+    'Syncs the LinkedPlayers.json with the members on the server!'
   )
   .setDefaultMemberPermissions(PermissionFlagsBits.ViewAuditLog)
   .addAttachmentOption((option) =>
     option
       .setName('linked-players-json')
       .setDescription('The LinkedPlayers.json file')
-      .setRequired(true),
+      .setRequired(true)
   );
 
 export const execute = async (interaction) => {

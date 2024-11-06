@@ -9,5 +9,8 @@ export const data = new SlashCommandBuilder()
 export const execute = async (interaction) => {
   const response = await fetch('https://api.ipify.org/');
   const ip = await response.text();
-  await interaction.reply('Current ip: `' + ip + '`');
+  await interaction.reply({
+    content: 'Current ip: `' + ip + '`',
+    ephemeral: true,
+  });
 };

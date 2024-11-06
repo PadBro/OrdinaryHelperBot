@@ -5,6 +5,7 @@ import {
   TextInputStyle,
 } from 'discord.js';
 import { faq } from '../../models/faq.js';
+import Logger from '../../utils/logger.js';
 
 const modal = new ModalBuilder()
   .setCustomId('createFaq')
@@ -46,7 +47,7 @@ export const handler = async (interaction) => {
         ephemeral: true,
       });
     } else {
-      console.error(e);
+      Logger.error(e);
       await interaction.reply({
         content: `An error occurred while creating the FAQ entry. Please try again later. If this error persists, please report to the staff team.`,
         ephemeral: true,

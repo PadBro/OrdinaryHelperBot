@@ -1,14 +1,16 @@
+import Logger from '../../utils/logger.js';
+
 export const handler = async (interaction) => {
   const command = interaction.client.commands.get(interaction.commandName);
 
   if (!command) {
-    console.error(`No command matching ${interaction.commandName} was found.`);
+    Logger.error(`No command matching ${interaction.commandName} was found.`);
     return;
   }
 
   try {
     await command.autocomplete(interaction);
   } catch (error) {
-    console.error(error);
+    Logger.error(error);
   }
 };

@@ -13,7 +13,7 @@ export const executePurge = async (interaction) => {
     !(await confirmAction(
       interaction,
       'Do you really want to purge?',
-      'Confirm Purge',
+      'Confirm Purge'
     ))
   ) {
     return;

@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { rule } from '../../models/rule.js';
 import { Op } from 'sequelize';
+import Logger from '../../utils/logger.js';
 
 export const data = new SlashCommandBuilder()
   .setName('rule-remove')
@@ -11,7 +12,7 @@ export const data = new SlashCommandBuilder()
       .setName('rule')
       .setDescription('The rule category')
       .setRequired(true)
-      .setAutocomplete(true),
+      .setAutocomplete(true)
   );
 
 export const autocomplete = async (interaction) => {
@@ -29,7 +30,7 @@ export const autocomplete = async (interaction) => {
     rules.map((rule) => ({
       name: `${rule.number}. ${rule.name}`,
       value: `${rule.id}`,
-    })),
+    }))
   );
 };
 
@@ -56,7 +57,7 @@ export const execute = async (interaction) => {
       ephemeral: true,
     });
   } catch (e) {
-    console.error(e);
+    Logger.error(e);
     await interaction.reply({
       content: `An error occurred while retrieving the rule entry. Please try again later. If this error persists, please report to the staff team.`,
       ephemeral: true,
