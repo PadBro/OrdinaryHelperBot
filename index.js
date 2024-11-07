@@ -8,6 +8,7 @@ import {
   getCommands,
   deployCommands,
   getModals,
+  Logger,
 } from './utils/index.js';
 import {
   modalHandler,
@@ -39,7 +40,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 
 client.once(Events.ClientReady, (readyClient) => {
-  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+  Logger.debug(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
 client.on('guildMemberRemove', (member) => {
@@ -55,16 +56,16 @@ client.on('guildMemberAdd', (member) => {
 
 try {
   await sequelize.authenticate();
-  console.log('Connection to the database has been established successfully.');
+  Logger.debug('Connection to the database has been established successfully.');
 } catch (error) {
-  console.error('Unable to connect to the database:', error);
+  Logger.error('Unable to connect to the database:', error);
 }
 
-console.log('syncing models');
+Logger.debug('syncing models');
 for (const model of models) {
   await model.sync({ alter: true });
 }
-console.log('models synced');
+Logger.debug('models synced');
 
 deployCommands();
 client.login(process.env.DISCORD_TOKEN);

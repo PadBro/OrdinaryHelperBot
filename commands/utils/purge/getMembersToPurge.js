@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 export const getMembersToPurge = async (interaction) => {
   let role = interaction.guild.roles.cache.find(
-    (role) => role.id === process.env.MEMBER_ROLE_ID,
+    (role) => role.id === process.env.MEMBER_ROLE_ID
   );
   const purgePeriod =
     interaction.options.getInteger('days') || process.env.PURGE_PERIOD_IN_DAYS;

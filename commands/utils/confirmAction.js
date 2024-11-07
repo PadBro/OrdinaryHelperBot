@@ -3,7 +3,7 @@ import { ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
 export const confirmAction = async (
   interaction,
   confirmMessage,
-  confirmLabel,
+  confirmLabel
 ) => {
   const confirm = new ButtonBuilder()
     .setCustomId('confirm')

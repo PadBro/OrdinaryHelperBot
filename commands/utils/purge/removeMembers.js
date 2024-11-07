@@ -12,7 +12,7 @@ export const removeMembers = async (interaction) => {
     !(await confirmAction(
       interaction,
       'Do you really want to remove member roles?',
-      'Confirm member remove',
+      'Confirm member remove'
     ))
   ) {
     return;

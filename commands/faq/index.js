@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, MessageFlags, EmbedBuilder } from 'discord.js';
 import { faq } from '../../models/faq.js';
 import { Op } from 'sequelize';
+import Logger from '../../utils/logger.js';
 
 export const data = new SlashCommandBuilder()
   .setName('faq')
@@ -10,7 +11,7 @@ export const data = new SlashCommandBuilder()
       .setName('question')
       .setDescription('The FAQ category')
       .setRequired(true)
-      .setAutocomplete(true),
+      .setAutocomplete(true)
   );
 
 export const autocomplete = async (interaction) => {
@@ -24,7 +25,7 @@ export const autocomplete = async (interaction) => {
     },
   });
   await interaction.respond(
-    faqs.map((faq) => ({ name: faq.question, value: `${faq.id}` })),
+    faqs.map((faq) => ({ name: faq.question, value: `${faq.id}` }))
   );
 };
 
@@ -56,7 +57,7 @@ export const execute = async (interaction) => {
       embeds: [embed],
     });
   } catch (e) {
-    console.error(e);
+    Logger.error(e);
     await interaction.reply({
       content: `An error occurred while retrieving the FAQ entry. Please try again later. If this error persists, please report to the staff team.`,
       ephemeral: true,
