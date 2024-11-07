@@ -12,7 +12,7 @@ export const removeLinked = async (interaction) => {
     !(await confirmAction(
       interaction,
       'Do you really want to remove linked roles?',
-      'Confirm Linked Remove',
+      'Confirm Linked Remove'
     ))
   ) {
     return;

@@ -2,6 +2,7 @@ import { Collection } from 'discord.js';
 import { readdirSync } from 'fs';
 import { join as joinPath } from 'path';
 import { pathToFileURL } from 'url';
+import Logger from './logger.js';
 
 export const getCommands = async () => {
   const commands = new Collection();
@@ -18,7 +19,7 @@ export const getCommands = async () => {
       continue;
     }
     const commandFiles = readdirSync(commandsPath).filter((file) =>
-      file.endsWith('.js'),
+      file.endsWith('.js')
     );
     for (const file of commandFiles) {
       const filePath = joinPath(commandsPath, file);
@@ -38,8 +39,8 @@ const loadCommand = async (filePath, commands) => {
   ) {
     commands.set(command.data.name, command);
   } else {
-    console.log(
-      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
+    Logger.warning(
+      `The command at ${filePath} is missing a required "data" or "execute" property.`
     );
   }
 };

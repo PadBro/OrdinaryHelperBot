@@ -16,21 +16,21 @@ export const data = new SlashCommandBuilder()
         option
           .setName('days')
           .setDescription('Number of days to preview')
-          .setMinValue(1),
-      ),
+          .setMinValue(1)
+      )
   )
   .addSubcommand((subcommand) =>
     subcommand
       .setName('execute')
       .setDescription(
-        'execute purge (remove inactive member roles and linked roles)',
+        'execute purge (remove inactive member roles and linked roles)'
       )
       .addIntegerOption((option) =>
         option
           .setName('days')
           .setDescription('Number of days to purge')
-          .setMinValue(1),
-      ),
+          .setMinValue(1)
+      )
   )
   .addSubcommand((subcommand) =>
     subcommand
@@ -40,13 +40,13 @@ export const data = new SlashCommandBuilder()
         option
           .setName('days')
           .setDescription('Number of days to remove members')
-          .setMinValue(1),
-      ),
+          .setMinValue(1)
+      )
   )
   .addSubcommand((subcommand) =>
     subcommand
       .setName('remove-linked')
-      .setDescription('remove linked role from every member'),
+      .setDescription('remove linked role from every member')
   );
 
 export const execute = async (interaction) => {
