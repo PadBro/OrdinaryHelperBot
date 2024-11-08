@@ -63,7 +63,11 @@ try {
 
 Logger.debug('syncing models');
 for (const model of models) {
-  await model.sync({ alter: true });
+  try {
+    await model.sync({ alter: true });
+  } catch (e) {
+    throw `${model.name}: ${e}`;
+  }
 }
 Logger.debug('models synced');
 

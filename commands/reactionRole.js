@@ -1,4 +1,7 @@
-import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import Logger from '../utils/logger.js'
+import Paginate from './utils/paginate.js'
+import { reactionRole } from '../models/reactionRole.js';
 
 export const data = new SlashCommandBuilder()
   .setName('reaction-role')
@@ -29,6 +32,11 @@ export const data = new SlashCommandBuilder()
           .setDescription('The role to assing/remove if reacted.')
           .setRequired(true),
       ),
+  )
+  .addSubcommand((subcommand) =>
+    subcommand
+      .setName('list')
+      .setDescription('List all reaction roles.')
   );
 
 export const execute = async (interaction) => {
@@ -36,6 +44,9 @@ export const execute = async (interaction) => {
   switch (subcommand) {
     case 'add':
       addReactionRole(interaction);
+      break;
+    case 'list':
+      listReactionRole(interaction);
       break;
     default:
       interaction.reply('command not found');
@@ -50,31 +61,49 @@ const addReactionRole = async (interaction) => {
 
   const messageLink = interaction.options.getString('message');
   const emoji = interaction.options.getString('emoji');
+  const role = interaction.options.getRole('role');
+
+  if (role.name === '@everyone') {
+    interaction.reply({
+      content: 'The role can not be @everyone.',
+      ephemeral: true,
+    });
+    return
+  }
 
   if (!messageLink.includes(discordChannelLinkBase)) {
-    interaction.reply('not discord channel link');
+    interaction.reply({
+      content: 'The provided message link is not a discord message link.',
+      ephemeral: true,
+    });
     return
   }
 
   const [guildId, channelId, messageId] = messageLink.replace(discordChannelLinkBase, '').split('/')
-  console.log(guildId, channelId, messageId)
   if (guildId !== interaction.guild.id) {
-    interaction.reply('not from right server');
+    interaction.reply({
+      content: 'The provided link is not from this server.',
+      ephemeral: true,
+    });
     return
   }
 
   const channel = await interaction.guild.channels.fetch(channelId)
   if (!channel) {
-    interaction.reply('Channel not found');
+    interaction.reply({
+      content: 'The channel was not found on this server.',
+      ephemeral: true,
+    });
     return
   }
   const message = await channel.messages.fetch(messageId)
   if (!message) {
-    interaction.reply('Message not found');
+    interaction.reply({
+      content: 'The message was not found on this server.',
+      ephemeral: true,
+    });
     return
   }
-  console.log(channel)
-  console.log(message)
 
   if (emojiRegex.test(emoji)) {
     reactionEmoji = emoji
@@ -84,16 +113,99 @@ const addReactionRole = async (interaction) => {
   if (!reactionEmoji && match) {
     const serverEmoji = interaction.guild.emojis.cache.find(guildEmoji => guildEmoji.id === `${match[1]}`)
     if (serverEmoji) {
-      reactionEmoji = serverEmoji.id;
+      reactionEmoji = match[0];
     }
   }
 
   if (!reactionEmoji) {
-    interaction.reply('emoji not found');
+    interaction.reply({
+      content: 'The emoji is not valid.',
+      ephemeral: true,
+    });
     return
   }
 
-  const reply = await interaction.reply({content: 'found', fetchReply: true});
-  reply.react(reactionEmoji)
-  return;
+  try {
+    await message.react(reactionEmoji);
+  } catch (e) {
+    Logger.error(`An error occoured while creating a reaction role: ${e}`)
+    await interaction.reply({
+      content: 'Could not react to message.',
+      ephemeral: true,
+    });
+    return
+  }
+
+  try {
+    await reactionRole.create({
+      messageId,
+      channelId,
+      emoji: reactionEmoji,
+      roleId: role.id,
+    })
+
+    await interaction.reply({
+      content: 'Reaction role was created.',
+      ephemeral: true,
+    });
+  } catch(e) {
+    Logger.error(e);
+    await interaction.reply({
+      content: `An error occurred while creating the FAQ entry. Please try again later. If this error persists, please report to the staff team.`,
+      ephemeral: true,
+    });
+  }
+}
+
+const listReactionRole = async (interaction) => {
+  const reactionRoles = await reactionRole.findAll();
+  const rolesOrderedByMessage = {}
+  const embeds = []
+  for (const role of reactionRoles) {
+    if (!rolesOrderedByMessage[role.messageId]) {
+      const channel = await interaction.guild.channels.cache.find((channel) => `${role.channelId}` === `${channel.id}`)
+      const message = await channel.messages.fetch(role.messageId)
+      rolesOrderedByMessage[role.messageId] = {
+        message,
+        reactionRoles: [],
+      }
+    }
+    role.role = await interaction.guild.roles.cache.find((guildRole) => guildRole.id === role.roleId)
+    rolesOrderedByMessage[role.messageId].reactionRoles.push(role)
+  }
+
+  // Object.entries(rolesOrderedByMessage).forEach(([key, value]) => {
+  //   const embed = new EmbedBuilder()
+  //     .setTitle("Reaction roles")
+  //     .setDescription(`${value.message.url}`)
+  //     .setTimestamp();
+
+  //   value.reactionRoles.forEach((reactionRole) => {
+  //     embed.addFields({
+  //       name: `${reactionRole.emoji}`,
+  //       value: `${reactionRole.role}`
+  //     })
+  //   })
+
+  //   embeds.push(embed)
+  // })
+  const pagination = new Paginate(interaction, Object.values(rolesOrderedByMessage), embedBuilder)
+  const message = await pagination.render()
+  pagination.paginate(message)
+}
+
+const embedBuilder = (data) => {
+    // console.log('embedBuilder', data)
+  const embed = new EmbedBuilder()
+    .setTitle("Reaction roles")
+    .setDescription(`${data.message.url}`)
+    .setTimestamp();
+
+  data.reactionRoles.forEach((reactionRole) => {
+    embed.addFields({
+      name: `${reactionRole.emoji}`,
+      value: `${reactionRole.role}`
+    })
+  })
+  return embed
 }
