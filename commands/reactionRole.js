@@ -174,38 +174,22 @@ const listReactionRole = async (interaction) => {
     rolesOrderedByMessage[role.messageId].reactionRoles.push(role)
   }
 
-  // Object.entries(rolesOrderedByMessage).forEach(([key, value]) => {
-  //   const embed = new EmbedBuilder()
-  //     .setTitle("Reaction roles")
-  //     .setDescription(`${value.message.url}`)
-  //     .setTimestamp();
+  Object.entries(rolesOrderedByMessage).forEach(([, value]) => {
+    const embed = new EmbedBuilder()
+      .setTitle("Reaction roles")
+      .setDescription(`${value.message.url}`)
+      .setTimestamp();
 
-  //   value.reactionRoles.forEach((reactionRole) => {
-  //     embed.addFields({
-  //       name: `${reactionRole.emoji}`,
-  //       value: `${reactionRole.role}`
-  //     })
-  //   })
-
-  //   embeds.push(embed)
-  // })
-  const pagination = new Paginate(interaction, Object.values(rolesOrderedByMessage), embedBuilder)
-  const message = await pagination.render()
-  pagination.paginate(message)
-}
-
-const embedBuilder = (data) => {
-    // console.log('embedBuilder', data)
-  const embed = new EmbedBuilder()
-    .setTitle("Reaction roles")
-    .setDescription(`${data.message.url}`)
-    .setTimestamp();
-
-  data.reactionRoles.forEach((reactionRole) => {
-    embed.addFields({
-      name: `${reactionRole.emoji}`,
-      value: `${reactionRole.role}`
+    value.reactionRoles.forEach((reactionRole) => {
+      embed.addFields({
+        name: `${reactionRole.emoji}`,
+        value: `${reactionRole.role}`
+      })
     })
+
+    embeds.push(embed)
   })
-  return embed
+
+  const pagination = new Paginate(interaction, embeds)
+  await pagination.paginate()
 }
