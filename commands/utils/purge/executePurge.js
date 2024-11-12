@@ -1,9 +1,9 @@
-import { PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import { PermissionFlagsBits } from 'discord.js';
 import { confirmAction } from '../confirmAction.js';
 import { hasPermission } from '../hasPermission.js';
 import { removeMemberRoles } from './removeMemberRoles.js';
 import { removeLinkedRoles } from './removeLinkedRoles.js';
-import { chunkData } from '../../../utils/chunkData.js';
+import { createEmbed } from './embed.js';
 
 export const executePurge = async (interaction) => {
   if (!(await hasPermission(interaction, PermissionFlagsBits.BanMembers))) {
@@ -23,27 +23,10 @@ export const executePurge = async (interaction) => {
   const filteredMembers = await removeMemberRoles(interaction);
   const members = filteredMembers?.map((member) => `${member}`);
 
-  const embed = new EmbedBuilder()
-    .setTitle('Purge')
-    .setColor('#ce361e')
-    .setDescription(`${members.length} members purged`)
-    .setTimestamp();
-
-  const chunkedData = chunkData(members, 3, 46);
-  const data = chunkedData.map((chunk) => {
-    const mappedChunk = chunk.map((subChunk) => {
-      return {
-        name: '\u200B',
-        value: subChunk.join('\n'),
-        inline: true,
-      };
-    });
-    return mappedChunk;
-  });
+  const embed = createEmbed(members);
+  embed.setDescription(`${members.length} members purged`);
 
   await removeLinkedRoles(interaction);
-  let flattenData = data.flat(1);
-  embed.setFields(flattenData);
 
   await interaction.channel.send({
     embeds: [embed],
