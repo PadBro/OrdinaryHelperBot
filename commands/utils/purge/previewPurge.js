@@ -8,6 +8,7 @@ export const previewPurge = async (interaction) => {
 
   const embed = new EmbedBuilder()
     .setTitle('Purge')
+    .setColor('#ce361e')
     .setDescription(`To be purged: ${members.length} members`)
     .setTimestamp();
 
@@ -16,7 +17,7 @@ export const previewPurge = async (interaction) => {
     const mappedChunk = chunk.map((subChunk) => {
       return {
         name: '\u200B',
-        value: subChunk.join('\n'),
+        value: subChunk.join('\n') + '\u200B',
         inline: true,
       };
     });

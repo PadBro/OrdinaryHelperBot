@@ -25,6 +25,7 @@ export const executePurge = async (interaction) => {
 
   const embed = new EmbedBuilder()
     .setTitle('Purge')
+    .setColor('#ce361e')
     .setDescription(`${members.length} members purged`)
     .setTimestamp();
 
