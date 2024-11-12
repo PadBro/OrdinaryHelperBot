@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, MessageFlags, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { faq } from '../../models/faq.js';
 import { Op } from 'sequelize';
 import Logger from '../../utils/logger.js';
@@ -43,7 +43,6 @@ export const execute = async (interaction) => {
         content:
           'The question was not found. Please try again later. If this error persists, please report to the staff team.',
         ephemeral: true,
-        flags: [MessageFlags.SuppressEmbeds],
       });
       return;
     }

@@ -69,6 +69,7 @@ export default class Paginate {
 
   async #render() {
     const embed = this.#getEmbed();
+    embed.setFooter({ text: `Page ${this.#page} of ${this.#maxPage}` });
     this.#payload = {
       content: !embed ? 'Could not load data please try again later. If this error persists, please report to the staff team.' : '',
       embeds: embed ? [embed] : [],
