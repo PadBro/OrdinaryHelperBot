@@ -1,8 +1,9 @@
-import { PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import { PermissionFlagsBits } from 'discord.js';
 import { confirmAction } from '../confirmAction.js';
 import { hasPermission } from '../hasPermission.js';
 import { removeMemberRoles } from './removeMemberRoles.js';
 import { removeLinkedRoles } from './removeLinkedRoles.js';
+import { createEmbed } from './embed.js';
 
 export const executePurge = async (interaction) => {
   if (!(await hasPermission(interaction, PermissionFlagsBits.BanMembers))) {
@@ -20,17 +21,12 @@ export const executePurge = async (interaction) => {
   }
 
   const filteredMembers = await removeMemberRoles(interaction);
+  const members = filteredMembers?.map((member) => `${member}`);
+
+  const embed = createEmbed(members);
+  embed.setDescription(`${members.length} members purged`);
 
   await removeLinkedRoles(interaction);
-
-  const embed = new EmbedBuilder()
-    .setTitle('Member Purge')
-    .setDescription('Executed Purge')
-    .addFields({
-      name: 'Purged Members',
-      value: `${filteredMembers?.map((member) => `${member}`).join(', ') || '---'}`,
-    })
-    .setTimestamp();
 
   await interaction.channel.send({
     embeds: [embed],
