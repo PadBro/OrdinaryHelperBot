@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } from 'discord.
 import Logger from '../utils/logger.js'
 import Paginate from './utils/paginate.js'
 import { reactionRole } from '../models/reactionRole.js';
+import Emoji from '../utils/emoji.js'
 
 export const data = new SlashCommandBuilder()
   .setName('reaction-role')
@@ -69,10 +70,10 @@ export const execute = async (interaction) => {
 
 const addReactionRole = async (interaction) => {
   const discordChannelLinkBase = 'https://discord.com/channels/'
-  const emojiRegex = /^(\p{Emoji})$/u
-  const discordEmojiRegex = /^<.+:([0-9]+)>$/
-  let reactionEmoji = null;
-  let databaseEmoji = null;
+  // const emojiRegex = /^(\p{Emoji})$/u
+  // const discordEmojiRegex = /^<.+:([0-9]+)>$/
+  // let reactionEmoji = null;
+  // let databaseEmoji = null;
 
   const messageLink = interaction.options.getString('message');
   const emoji = interaction.options.getString('emoji');
@@ -120,21 +121,10 @@ const addReactionRole = async (interaction) => {
     return
   }
 
-  if (emojiRegex.test(emoji)) {
-    databaseEmoji = emoji.codePointAt(0).toString(16)
-    reactionEmoji = emoji
-  }
 
-  const match = emoji.match(discordEmojiRegex);
-  if (!reactionEmoji && match) {
-    const serverEmoji = interaction.guild.emojis.cache.find(guildEmoji => guildEmoji.id === `${match[1]}`)
-    if (serverEmoji) {
-      databaseEmoji = match[0];
-      reactionEmoji = match[0];
-    }
-  }
+  const emojiHandler = new Emoji(emoji)
 
-  if (!reactionEmoji) {
+  if (!emojiHandler.isValid(interaction.guild.emojis)) {
     interaction.reply({
       content: 'The emoji is not valid.',
       ephemeral: true,
@@ -143,8 +133,7 @@ const addReactionRole = async (interaction) => {
   }
 
   try {
-    // String.fromCodePoint("0x"+hex);
-    await message.react(reactionEmoji);
+    await message.react(emojiHandler.emoji);
   } catch (e) {
     Logger.error(`An error occoured while creating a reaction role: ${e}`)
     await interaction.reply({
@@ -158,7 +147,7 @@ const addReactionRole = async (interaction) => {
     await reactionRole.create({
       messageId,
       channelId,
-      emoji: databaseEmoji,
+      emoji: emojiHandler.forDatabase(),
       roleId: role.id,
     })
 
@@ -201,10 +190,10 @@ const listReactionRole = async (interaction) => {
       .setTimestamp();
 
     value.reactionRoles.forEach((reactionRole) => {
-      const emoji = reactionRole.emoji.match(discordEmojiRegex) ? reactionRole.emoji : String.fromCodePoint("0x"+reactionRole.emoji);
+      const emojiHandler = new Emoji(reactionRole.emoji)
       embed.addFields({
         name: `ID: ${reactionRole.id}`,
-        value: `Emoji: ${emoji}\n Role: ${reactionRole.role}`
+        value: `Emoji: ${emojiHandler.forOutput()}\n Role: ${reactionRole.role}`
       })
     })
 
@@ -231,11 +220,11 @@ const removeReactionRole = async (interaction) => {
 
     return;
   }
-
   try {
     const channel = await interaction.guild.channels.cache.find((channel) => `${toBeRemovedReactionRole.channelId}` === `${channel.id}`)
     const message = await channel.messages.fetch(toBeRemovedReactionRole.messageId)
-    await message.reactions.cache.get(toBeRemovedReactionRole.emoji).remove();
+    const emojiHandler = new Emoji(toBeRemovedReactionRole.emoji)
+    await message.reactions.cache.get(emojiHandler.forOutput()).remove();
   } catch {
     // the channel, message or reaction is already removed
   }
