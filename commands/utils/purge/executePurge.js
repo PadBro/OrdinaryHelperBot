@@ -21,7 +21,9 @@ export const executePurge = async (interaction) => {
   }
 
   const filteredMembers = await removeMemberRoles(interaction);
-  const members = filteredMembers?.map((member) => `${member}`);
+  const members = filteredMembers?.map(
+    (member) => `${member.nickname || member}`
+  );
 
   const embed = createEmbed(members);
   embed.setDescription(`${members.length} members purged`);
