@@ -3,7 +3,7 @@ import { createEmbed } from './embed.js';
 
 export const previewPurge = async (interaction) => {
   const filteredMembers = await getMembersToPurge(interaction);
-  const members = filteredMembers?.map((member) => `${member}`);
+  const members = filteredMembers?.map((member) => `${member.nickname || member.displayName}`);
 
   const embed = createEmbed(members);
   embed.setDescription(`To be purged: ${members.length} members`);
