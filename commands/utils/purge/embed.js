@@ -16,6 +16,8 @@ export const createEmbed = (members) => {
     }
   });
 
+  members = members.map((member) => member.replace(/_/g, '\\_'));
+
   if (members.length % amountSubChunks == 1) {
     const index = Math.floor(members.length / amountSubChunks);
     const item = members.splice(index, 1)[0];
