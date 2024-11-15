@@ -4,7 +4,7 @@ import { createEmbed } from './embed.js';
 export const previewPurge = async (interaction) => {
   const filteredMembers = await getMembersToPurge(interaction);
   const members = filteredMembers?.map(
-    (member) => `${member.nickname || member.displayName}`
+    (member) => `${member.nickname || member}`
   );
 
   const embed = createEmbed(members);

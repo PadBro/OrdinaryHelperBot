@@ -4,9 +4,17 @@ import { chunkData } from '../../../utils/chunkData.js';
 export const createEmbed = (members) => {
   const amountSubChunks = 3;
 
-  members = members.sort((a, b) =>
-    a.localeCompare(b, undefined, { sensitivity: 'base' })
-  );
+  members = members.sort((a, b) => {
+    const startsWithLessThan = (str) => str.startsWith('<');
+
+    if (startsWithLessThan(a) && !startsWithLessThan(b)) {
+      return 1;
+    } else if (!startsWithLessThan(a) && startsWithLessThan(b)) {
+      return -1;
+    } else {
+      return a.localeCompare(b, undefined, { sensitivity: 'base' });
+    }
+  });
 
   if (members.length % amountSubChunks == 1) {
     const index = Math.floor(members.length / amountSubChunks);
