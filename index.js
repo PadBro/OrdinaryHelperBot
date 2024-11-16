@@ -15,7 +15,7 @@ import {
   commandsHandler,
   autocompleteHandler,
 } from './events/interaction.js';
-import { handleReactionRole } from './events/reactionRole.js'
+import { handleReactionRole } from './events/reactionRole.js';
 
 const intents = [
   GatewayIntentBits.Guilds,
@@ -24,11 +24,7 @@ const intents = [
   GatewayIntentBits.GuildMessages,
   GatewayIntentBits.GuildMessageReactions,
 ];
-const partials =  [
-  Partials.Message,
-  Partials.Channel,
-  Partials.Reaction
-];
+const partials = [Partials.Message, Partials.Channel, Partials.Reaction];
 
 const client = new Client({ intents, partials });
 client.commands = await getCommands();
@@ -60,11 +56,11 @@ client.on(Events.GuildMemberAdd, async (member) => {
 });
 
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
-  handleReactionRole(reaction, user, 'add')
+  handleReactionRole(reaction, user, 'add');
 });
 
 client.on(Events.MessageReactionRemove, async (reaction, user) => {
-  handleReactionRole(reaction, user, 'remove')
+  handleReactionRole(reaction, user, 'remove');
 });
 
 try {

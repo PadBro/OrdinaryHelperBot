@@ -1,8 +1,12 @@
-import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
-import Logger from '../utils/logger.js'
-import Paginate from './utils/paginate.js'
+import {
+  SlashCommandBuilder,
+  PermissionFlagsBits,
+  EmbedBuilder,
+} from 'discord.js';
+import Logger from '../utils/logger.js';
+import Paginate from './utils/paginate.js';
 import { reactionRole } from '../models/reactionRole.js';
-import Emoji from '../utils/emoji.js'
+import Emoji from '../utils/emoji.js';
 
 export const data = new SlashCommandBuilder()
   .setName('reaction-role')
@@ -19,25 +23,23 @@ export const data = new SlashCommandBuilder()
         option
           .setName('message')
           .setDescription('The message link to add the reaction to.')
-          .setRequired(true),
+          .setRequired(true)
       )
       .addStringOption((option) =>
         option
           .setName('emoji')
           .setDescription('The emoji to react with.')
-          .setRequired(true),
+          .setRequired(true)
       )
       .addRoleOption((option) =>
         option
           .setName('role')
           .setDescription('The role to assing/remove if reacted.')
-          .setRequired(true),
-      ),
+          .setRequired(true)
+      )
   )
   .addSubcommand((subcommand) =>
-    subcommand
-      .setName('list')
-      .setDescription('List all reaction roles.')
+    subcommand.setName('list').setDescription('List all reaction roles.')
   )
   .addSubcommand((subcommand) =>
     subcommand
@@ -69,7 +71,7 @@ export const execute = async (interaction) => {
 };
 
 const addReactionRole = async (interaction) => {
-  const discordChannelLinkBase = 'https://discord.com/channels/'
+  const discordChannelLinkBase = 'https://discord.com/channels/';
   // const emojiRegex = /^(\p{Emoji})$/u
   // const discordEmojiRegex = /^<.+:([0-9]+)>$/
   // let reactionEmoji = null;
@@ -84,7 +86,7 @@ const addReactionRole = async (interaction) => {
       content: 'The role can not be @everyone.',
       ephemeral: true,
     });
-    return
+    return;
   }
 
   if (!messageLink.includes(discordChannelLinkBase)) {
@@ -92,55 +94,56 @@ const addReactionRole = async (interaction) => {
       content: 'The provided message link is not a discord message link.',
       ephemeral: true,
     });
-    return
+    return;
   }
 
-  const [guildId, channelId, messageId] = messageLink.replace(discordChannelLinkBase, '').split('/')
+  const [guildId, channelId, messageId] = messageLink
+    .replace(discordChannelLinkBase, '')
+    .split('/');
   if (guildId !== interaction.guild.id) {
     interaction.reply({
       content: 'The provided link is not from this server.',
       ephemeral: true,
     });
-    return
+    return;
   }
 
-  const channel = await interaction.guild.channels.fetch(channelId)
+  const channel = await interaction.guild.channels.fetch(channelId);
   if (!channel) {
     interaction.reply({
       content: 'The channel was not found on this server.',
       ephemeral: true,
     });
-    return
+    return;
   }
-  const message = await channel.messages.fetch(messageId)
+  const message = await channel.messages.fetch(messageId);
   if (!message) {
     interaction.reply({
       content: 'The message was not found on this server.',
       ephemeral: true,
     });
-    return
+    return;
   }
 
-
-  const emojiHandler = new Emoji(emoji)
+  const emojiHandler = new Emoji(emoji);
 
   if (!emojiHandler.isValid(interaction.guild.emojis)) {
     interaction.reply({
       content: 'The emoji is not valid.',
       ephemeral: true,
     });
-    return
+    return;
   }
 
   try {
     await message.react(emojiHandler.emoji);
   } catch (e) {
-    Logger.error(`An error occoured while creating a reaction role: ${e}`)
+    Logger.error(`An error occoured while creating a reaction role: ${e}`);
     await interaction.reply({
       content: 'Could not react to message.',
       ephemeral: true,
     });
-    return
+    return;
   }
 
   try {
@@ -149,60 +152,82 @@ const addReactionRole = async (interaction) => {
       channelId,
       emoji: emojiHandler.forDatabase(),
       roleId: role.id,
-    })
+    });
 
     await interaction.reply({
       content: 'Reaction role was created.',
       ephemeral: true,
     });
-  } catch(e) {
+  } catch (e) {
     Logger.error(e);
     await interaction.reply({
       content: `An error occurred while creating the FAQ entry. Please try again later. If this error persists, please report to the staff team.`,
       ephemeral: true,
     });
   }
-}
+};
 
 const listReactionRole = async (interaction) => {
-  const discordEmojiRegex = /^<.+:([0-9]+)>$/
-
   const reactionRoles = await reactionRole.findAll();
-  const rolesOrderedByMessage = {}
-  const embeds = []
+  const rolesOrderedByMessage = {};
+  const embeds = [];
   for (const role of reactionRoles) {
     if (!rolesOrderedByMessage[role.messageId]) {
-      const channel = await interaction.guild.channels.cache.find((channel) => `${role.channelId}` === `${channel.id}`)
-      const message = await channel.messages.fetch(role.messageId)
+      let channel;
+      let message;
+      try {
+        channel = await interaction.guild.channels.cache.find(
+          (channel) => `${role.channelId}` === `${channel.id}`
+        );
+        message = await channel.messages.fetch(role.messageId);
+      } catch (e) {
+        // Unknown message || Unknown channel
+        if (e.code === 10008 || e.code === 10003) {
+          role.destroy();
+          continue;
+        }
+        Logger.error(
+          `An error occoured while fetching the reaction roles: ${e}`
+        );
+        await interaction.reply({
+          content:
+            'An error occoured while fetching the reaction roles. Please try again later. If this error persists, please report to the staff team.',
+          ephemeral: true,
+        });
+        return;
+      }
+
       rolesOrderedByMessage[role.messageId] = {
         message,
         reactionRoles: [],
-      }
+      };
     }
-    role.role = await interaction.guild.roles.cache.find((guildRole) => guildRole.id === role.roleId)
-    rolesOrderedByMessage[role.messageId].reactionRoles.push(role)
+    role.role = await interaction.guild.roles.cache.find(
+      (guildRole) => guildRole.id === role.roleId
+    );
+    rolesOrderedByMessage[role.messageId].reactionRoles.push(role);
   }
 
   Object.entries(rolesOrderedByMessage).forEach(([, value]) => {
     const embed = new EmbedBuilder()
-      .setTitle("Reaction roles")
+      .setTitle('Reaction roles')
       .setDescription(`Reaction roles for: ${value.message.url}`)
       .setTimestamp();
 
     value.reactionRoles.forEach((reactionRole) => {
-      const emojiHandler = new Emoji(reactionRole.emoji)
+      const emojiHandler = new Emoji(reactionRole.emoji);
       embed.addFields({
         name: `ID: ${reactionRole.id}`,
-        value: `Emoji: ${emojiHandler.forOutput()}\n Role: ${reactionRole.role}`
-      })
-    })
+        value: `Emoji: ${emojiHandler.forOutput()}\n Role: ${reactionRole.role}`,
+      });
+    });
 
-    embeds.push(embed)
-  })
+    embeds.push(embed);
+  });
 
-  const pagination = new Paginate(interaction, embeds)
-  await pagination.paginate()
-}
+  const pagination = new Paginate(interaction, embeds);
+  await pagination.paginate();
+};
 
 const removeReactionRole = async (interaction) => {
   const reactionRoleId = interaction.options.getString('reaction-role-id');
@@ -221,9 +246,13 @@ const removeReactionRole = async (interaction) => {
     return;
   }
   try {
-    const channel = await interaction.guild.channels.cache.find((channel) => `${toBeRemovedReactionRole.channelId}` === `${channel.id}`)
-    const message = await channel.messages.fetch(toBeRemovedReactionRole.messageId)
-    const emojiHandler = new Emoji(toBeRemovedReactionRole.emoji)
+    const channel = await interaction.guild.channels.cache.find(
+      (channel) => `${toBeRemovedReactionRole.channelId}` === `${channel.id}`
+    );
+    const message = await channel.messages.fetch(
+      toBeRemovedReactionRole.messageId
+    );
+    const emojiHandler = new Emoji(toBeRemovedReactionRole.emoji);
     await message.reactions.cache.get(emojiHandler.forOutput()).remove();
   } catch {
     // the channel, message or reaction is already removed
@@ -240,11 +269,11 @@ const removeReactionRole = async (interaction) => {
       content: 'The reaction role has been removed.',
       ephemeral: true,
     });
-  } catch(e) {
+  } catch (e) {
     Logger.error(e);
     await interaction.reply({
       content: `An error occurred while removing the reaction role. Please try again later. If this error persists, please report to the staff team.`,
       ephemeral: true,
     });
   }
-}
+};

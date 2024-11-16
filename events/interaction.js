@@ -66,4 +66,3 @@ export const modalHandler = async (interaction) => {
     }
   }
 };
-
