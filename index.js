@@ -15,7 +15,7 @@ import {
   commandsHandler,
   autocompleteHandler,
 } from './events/interaction.js';
-import { handleReaction } from './events/reaction.js'
+import { handleReactionRole } from './events/reactionRole.js'
 
 const intents = [
   GatewayIntentBits.Guilds,
@@ -60,11 +60,11 @@ client.on(Events.GuildMemberAdd, async (member) => {
 });
 
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
-  handleReaction(reaction, user, 'add')
+  handleReactionRole(reaction, user, 'add')
 });
 
 client.on(Events.MessageReactionRemove, async (reaction, user) => {
-  handleReaction(reaction, user, 'remove')
+  handleReactionRole(reaction, user, 'remove')
 });
 
 try {

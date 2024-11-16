@@ -2,7 +2,7 @@ import { reactionRole } from "../models/reactionRole.js";
 import { addRole, removeRole } from "../utils/roles.js";
 import Logger from "../utils/logger.js";
 
-export const handleReaction = async (reaction, user, type) => {
+export const handleReactionRole = async (reaction, user, type) => {
   if (user.bot) {
     return
   }
@@ -33,24 +33,26 @@ export const handleReaction = async (reaction, user, type) => {
     return
   }
   if (type === 'add') {
-    add(serverRole, member)
+    add(serverRole, member, user)
   } else if (type === 'remove') {
-    remove(serverRole, member)
+    remove(serverRole, member, user)
   }
 }
 
-const add = async (serverRole, member) => {
+const add = async (serverRole, member, user) => {
   const result = await addRole(member, serverRole);
   if (!result) {
-    // send user message could not asign role
+    user.send('The role `' + serverRole.name + '` could **not** be assigned to you. Please try again later. If this error persists, please report to the staff team.')
+    return
   }
-  // send user message role was asigned
+  user.send('The role `' + serverRole.name + '` was assigned to you.')
 }
 
-const remove = async (serverRole, member) => {
+const remove = async (serverRole, member, user) => {
   const result = await removeRole(member, serverRole);
   if (!result) {
-    // send user message could not remove role
+    user.send('The role `' + serverRole.name + '` could **not** be assigned to you. Please try again later. If this error persists, please report to the staff team.')
+    return
   }
-  // send user message role was removed
+  user.send('The role `' + serverRole.name + '` was removed to you.')
 }
