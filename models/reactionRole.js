@@ -39,6 +39,8 @@ export const reactionRole = sequelize.define('reaction_role', {
   emoji: {
     type: DataTypes.STRING(70),
     allowNull: false,
+    charset: 'utf8mb4',
+    collate: 'utf8mb4_unicode_ci',
     validate: {
       notEmpty: {
         args: true,

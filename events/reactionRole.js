@@ -83,7 +83,7 @@ const getRemoveEmbed = (result, serverRole, reaction) => {
     embed
       .setTitle('Reaction Roles error!')
       .setDescription(
-        `You reacted in **${reaction.message.guild.name}** to the message ${reaction.message.url} \n` +
+        `You removed your reaction in **${reaction.message.guild.name}** to the message ${reaction.message.url} \n` +
           'The role `' +
           serverRole.name +
           '` could **not** be removed to you.\n' +
@@ -91,9 +91,9 @@ const getRemoveEmbed = (result, serverRole, reaction) => {
       );
   } else {
     embed
-      .setTitle('Reaction Roles added!')
+      .setTitle('Reaction Roles removed!')
       .setDescription(
-        `You reacted in **${reaction.message.guild.name}** to the message ${reaction.message.url} \n` +
+        `You removed your reaction in **${reaction.message.guild.name}** to the message ${reaction.message.url} \n` +
           'The role `' +
           serverRole.name +
           '` was removed to you.'

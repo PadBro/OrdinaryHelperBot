@@ -1,42 +1,21 @@
-export default class Emoji {
-  #emojiRegex = /^(\p{Emoji})$/u;
-  #discordEmojiRegex = /^<.+:([0-9]+)>$/;
+const emojiRegex =
+  /^((?![\u{23}-\u1F6F3]([^\u{FE0F}]|$))\p{Emoji}(?:(?!\u{200D})\p{EComp}|(?=\u{200D})\u{200D}\p{Emoji})*)$/u;
+const discordEmojiRegex = /^<.+:([0-9]+)>$/;
 
-  emoji = '';
-  constructor(emoji) {
-    this.emoji = emoji;
+export const isValidEmoji = (emoji, guildEmojis) => {
+  if (emojiRegex.test(emoji)) {
+    return true;
   }
 
-  isValid(guildEmojis) {
-    if (this.#emojiRegex.test(this.emoji)) {
+  const match = emoji.match(discordEmojiRegex);
+  if (match) {
+    const serverEmoji = guildEmojis.cache.find(
+      (guildEmoji) => guildEmoji.id === `${match[1]}`
+    );
+    if (serverEmoji) {
       return true;
     }
-
-    const match = this.emoji.match(this.#discordEmojiRegex);
-    if (match) {
-      const serverEmoji = guildEmojis.cache.find(
-        (guildEmoji) => guildEmoji.id === `${match[1]}`
-      );
-      if (serverEmoji) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
-  forDatabase() {
-    if (this.#emojiRegex.test(this.emoji)) {
-      return this.emoji.codePointAt(0).toString(16);
-    }
-    return this.emoji;
-  }
-
-  forOutput() {
-    if (this.#discordEmojiRegex.test(this.emoji)) {
-      return this.emoji;
-    }
-    return String.fromCodePoint('0x' + this.emoji);
-  }
-}
-export const validate = () => {};
+  return false;
+};
