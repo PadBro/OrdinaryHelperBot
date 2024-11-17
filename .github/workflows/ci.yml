@@ -55,13 +55,13 @@ jobs:
         run: sudo apt-get install mysql-client
       - name: Test DB connection
         continue-on-error: true
-        run: mysql -h mariadb-test -u root -ppassword -e "SHOW DATABASES;"
+        run: mysql -h mariadb-test -u user -ppassword -e "SHOW DATABASES;"
       - name: test
         run: cat /etc/mysql/my.cnf
       - name: Run tests
         env:
           DB_TEST_NAME: ordinary_helper_test_database
-          DB_TEST_USER: root
+          DB_TEST_USER: user
           DB_TEST_PASSWORD: password
           DB_TEST_HOST: mariadb-test
         run: npm run test
