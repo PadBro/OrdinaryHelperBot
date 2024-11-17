@@ -1,5 +1,5 @@
 import { expect, test, vi } from 'vitest';
-import { execute, autocomplete } from '../../../commands/faq/index.js';
+import { execute, autocomplete } from '../../../commands/faq/remove.js';
 import { faq } from '../../../models/faq.js';
 
 const interaction = {
@@ -44,25 +44,31 @@ test('can execute', async () => {
   await execute(interaction);
 
   expect(interaction.reply).toBeCalledWith({
-    embeds: [
-      {
-        data: {
-          color: 15762234,
-          description: 'Testing',
-          title: 'Test',
-        },
-      },
-    ],
+    content: 'The FAQ has been removed.',
+    ephemeral: true,
   });
+
+  const removedFaq = await faq.findOne({
+    where: {
+      id: faqModel.id,
+    },
+  });
+
+  expect(removedFaq).toBeNull();
 });
 
 test('return error if faq is not found', async () => {
+  await faq.create({
+    question: 'Test',
+    answer: 'Testing',
+  });
+
   interaction.options.getString.mockReturnValue('0');
   await execute(interaction);
 
   expect(interaction.reply).toBeCalledWith({
-    content:
-      'The question was not found. Please try again later. If this error persists, please report to the staff team.',
+    content: 'The FAQ was not found.',
     ephemeral: true,
   });
+  expect(await faq.count()).toBe(1);
 });

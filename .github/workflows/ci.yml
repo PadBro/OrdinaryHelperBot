@@ -42,5 +42,6 @@ jobs:
           DB_TEST_NAME: ordinary_helper_test_database
           DB_TEST_USER: user
           DB_TEST_PASSWORD: password
-          DB_TEST_HOST: mariadb-test
-        run: npm run test
+        run: npm run coverage
+      - name: 'Report Coverage'
+        uses: davelosert/vitest-coverage-report-action@v2
