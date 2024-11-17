@@ -48,10 +48,14 @@ jobs:
         run: npm install --frozen-lockfile
       - name: Wait for Database to Start
         run: npx wait-on tcp:3306
+      - name: Install MySQL client
+        run: sudo apt-get install mysql-client
+      - name: Test DB connection
+        run: mysql -h mariadb-test -u user -ppassword -e "SHOW DATABASES;"
       - name: Run tests
         env:
           DB_TEST_NAME: ordinary_helper_test_database
           DB_TEST_USER: user
           DB_TEST_PASSWORD: password
-          DB_TEST_HOST: 127.0.0.1
+          DB_TEST_HOST: mariadb-test
         run: npm run test
