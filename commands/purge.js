@@ -1,8 +1,12 @@
 import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
-import { executePurge } from './utils/purge/executePurge.js';
-import { previewPurge } from './utils/purge/previewPurge.js';
-import { removeLinked } from './utils/purge/removeLinked.js';
-import { removeMembers } from './utils/purge/removeMembers.js';
+import { confirmAction } from './utils/confirmAction.js';
+import { hasPermission } from './utils/hasPermission.js';
+import {
+  createEmbed,
+  getMembersToPurge,
+  removeMemberRoles,
+  removeLinkedRoles,
+} from './utils/purge.js';
 
 export const data = new SlashCommandBuilder()
   .setName('purge')
@@ -23,7 +27,7 @@ export const data = new SlashCommandBuilder()
     subcommand
       .setName('execute')
       .setDescription(
-        'execute purge (remove inactive member roles and linked roles)'
+        'Remove inactive member roles and all linked roles'
       )
       .addIntegerOption((option) =>
         option
@@ -46,7 +50,7 @@ export const data = new SlashCommandBuilder()
   .addSubcommand((subcommand) =>
     subcommand
       .setName('remove-linked')
-      .setDescription('remove linked role from every member')
+      .setDescription('Remove linked role from all member')
   );
 
 export const execute = async (interaction) => {
@@ -67,4 +71,98 @@ export const execute = async (interaction) => {
     default:
       interaction.reply('command not found');
   }
+};
+
+const previewPurge = async (interaction) => {
+  const filteredMembers = await getMembersToPurge(interaction);
+  const members = filteredMembers?.map(
+    (member) => `${member.nickname || member}`
+  );
+
+  const embed = createEmbed(members);
+  embed.setDescription(`To be purged: ${members.length} members`);
+
+  await interaction.reply({
+    embeds: [embed],
+    ephemeral: true,
+  });
+};
+
+const executePurge = async (interaction) => {
+  if (!(await hasPermission(interaction, PermissionFlagsBits.BanMembers))) {
+    return;
+  }
+
+  const confirmed = await confirmAction(
+    interaction,
+    'Do you really want to purge?',
+    'Confirm purge'
+  );
+  if (!confirmed) {
+    return;
+  }
+
+  const filteredMembers = await removeMemberRoles(interaction);
+  const members = filteredMembers?.map(
+    (member) => `${member.nickname || member}`
+  );
+
+  const embed = createEmbed(members);
+  embed.setDescription(`${members.length} members purged`);
+
+  await removeLinkedRoles(interaction);
+
+  await interaction.channel.send({
+    embeds: [embed],
+  });
+};
+
+const removeMembers = async (interaction) => {
+  if (!(await hasPermission(interaction, PermissionFlagsBits.BanMembers))) {
+    return;
+  }
+
+  const confirmed = await confirmAction(
+    interaction,
+    'Do you really want to remove member roles?',
+    'Confirm member removal'
+  );
+  if (!confirmed) {
+    return;
+  }
+
+  const filteredMembers = await removeMemberRoles(interaction);
+  const members = filteredMembers?.map(
+    (member) => `${member.nickname || member}`
+  );
+
+  const embed = createEmbed(members);
+  embed
+    .setTitle('Member role removal')
+    .setDescription(`${members.length} member roles removed`);
+
+  await interaction.channel.send({
+    embeds: [embed],
+  });
+
+  return filteredMembers;
+};
+
+const removeLinked = async (interaction) => {
+  if (!(await hasPermission(interaction, PermissionFlagsBits.BanMembers))) {
+    return;
+  }
+
+  const confirmed = await confirmAction(
+    interaction,
+    'Do you really want to remove all assigned linked roles?',
+    'Confirm linked removal'
+  );
+  if (!confirmed) {
+    return;
+  }
+
+  await removeLinkedRoles(interaction);
+
+  await interaction.channel.send('Removed all Linked Roles');
 };
