@@ -45,6 +45,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: v22.2.0
+      - name: Start MySQL
+        run: sudo /etc/init.d/mysql start
       - name: Install dependencies
         run: npm install --frozen-lockfile
       - name: Wait for Database to Start
