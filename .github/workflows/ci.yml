@@ -57,7 +57,7 @@ jobs:
         continue-on-error: true
         run: mysql -h 127.0.0.1 -u user -ppassword -e "SHOW DATABASES;"
       - name: test
-        run: cat /etc/mysql/my.cnf
+        run: cat /var/run/mysqld/mysqld.sock
       - name: Run tests
         env:
           DB_TEST_NAME: ordinary_helper_test_database

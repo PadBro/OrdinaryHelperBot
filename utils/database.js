@@ -8,12 +8,12 @@ console.log(process.env.DB_HOST)
 console.log(process.env.DB_PORT)
 
 export const sequelize = new Sequelize(
-  'ordinary_helper_test_database',
-  'user',
-  'password',
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
   {
-    host: 'sdfefwryjm',
-    port: 3306,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT ?? 3306,
     dialect: 'mariadb',
     dialectOptions: {
         socketPath: "/var/run/mysqld/mysqld.sock",
