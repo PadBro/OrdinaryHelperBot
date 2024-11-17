@@ -53,5 +53,5 @@ jobs:
           DB_TEST_NAME: ordinary_helper_test_database
           DB_TEST_USER: user
           DB_TEST_PASSWORD: password
-          DB_TEST_HOST: mariadb-test
+          DB_TEST_HOST: 127.0.0.1
         run: npm run test
