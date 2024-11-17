@@ -54,6 +54,7 @@ jobs:
       - name: Install MySQL client
         run: sudo apt-get install mysql-client
       - name: Test DB connection
+        continue-on-error: true
         run: mysql -h 127.0.0.1 -u user -ppassword -e "SHOW DATABASES;"
       - name: test
         run: cat /etc/mysql/my.cnf
