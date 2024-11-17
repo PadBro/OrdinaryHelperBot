@@ -1,18 +1,17 @@
 import { Sequelize } from 'sequelize';
 import Logger from './logger.js';
 
-
 let options = {
   host: process.env.DB_HOST,
   port: process.env.DB_PORT ?? 3306,
   dialect: 'mariadb',
-}
+};
 
 if (process.env.ENVIRONMENT === 'test') {
   options = {
     dialect: 'sqlite',
-    storage: './database.sqlite'
-  }
+    storage: './database.sqlite',
+  };
 }
 
 export const sequelize = new Sequelize(
