@@ -53,10 +53,6 @@ jobs:
         run: docker ps
       - name: Check MariaDB logs
         run: docker logs $(docker ps -q --filter "name=mariadb-test")
-      - name: Install MySQL client
-        run: sudo apt-get install mysql-client
-      - name: Test DB connection
-        run: mysql -h mariadb-test -u user -ppassword -e "SHOW DATABASES;"
       - name: Run tests
         env:
           DB_TEST_NAME: ordinary_helper_test_database
