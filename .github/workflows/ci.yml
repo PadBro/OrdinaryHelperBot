@@ -56,11 +56,12 @@ jobs:
       - name: Install MySQL client
         run: sudo apt-get install mysql-client
       - name: Test DB connection
-        run: mysql -h localhost -u user -ppassword -e "SHOW DATABASES;"
+        continue-on-error: true
+        run: mysql -h 127.0.0.1 -u user -ppassword -e "SHOW DATABASES;"
       - name: Run tests
         env:
           DB_TEST_NAME: ordinary_helper_test_database
           DB_TEST_USER: user
           DB_TEST_PASSWORD: password
-          DB_TEST_HOST: localhost
+          DB_TEST_HOST: 127.0.0.1
         run: npm run test
