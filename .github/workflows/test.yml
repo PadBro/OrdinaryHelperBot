@@ -1,0 +1,39 @@
+name: Testing
+on:
+  workflow_run:
+    workflows: ["Linting"]
+    types:
+      - completed
+
+jobs:
+  run-test:
+    name: Test
+    runs-on: ubuntu-latest
+    services:
+      mariadb-test:
+        image: mariadb:10.6.18
+        env:
+          MARIADB_USER: user
+          MARIADB_PASSWORD: password
+          MARIADB_DATABASE: ordinary_helper_test_database
+          MARIADB_ROOT_PASSWORD: password
+        ports:
+          - 3306:3306
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: v22.2.0
+      - name: Install dependencies
+        run: npm install --frozen-lockfile
+      - name: Wait for Database to Start
+        run: npx wait-on tcp:3306
+      - name: Run tests
+        env:
+          DB_TEST_NAME: ordinary_helper_test_database
+          DB_TEST_USER: user
+          DB_TEST_PASSWORD: password
+          DB_TEST_HOST: mariadb-test
+        run: npm run test
