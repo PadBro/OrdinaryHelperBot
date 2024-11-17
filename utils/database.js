@@ -1,6 +1,12 @@
 import { Sequelize } from 'sequelize';
 import Logger from './logger.js';
 
+console.log(process.env.DB_NAME)
+console.log(process.env.DB_USER)
+console.log(process.env.DB_PASSWORD)
+console.log(process.env.DB_HOST)
+console.log(process.env.DB_PORT)
+
 export const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
