@@ -31,7 +31,7 @@ jobs:
       mariadb-test:
         image: mariadb:10.6.18
         env:
-          MARIADB_USER: root
+          MARIADB_USER: user
           MARIADB_PASSWORD: password
           MARIADB_DATABASE: ordinary_helper_test_database
           MARIADB_ROOT_PASSWORD: password
