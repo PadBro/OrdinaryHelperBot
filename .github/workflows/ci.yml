@@ -8,7 +8,7 @@ on:
     branches:
       - main
 jobs:
-  run-linters:
+  run-linter:
     name: Lint + Prettier
     runs-on: ubuntu-latest
     steps:
@@ -23,9 +23,9 @@ jobs:
       - name: Run linter + prettier
         run: npm run lint:ci
 
-  run-test:
+  run-tests:
     name: Test
-    needs: Lint + Prettier
+    needs: run-linter
     runs-on: ubuntu-latest
     services:
       mariadb-test:
