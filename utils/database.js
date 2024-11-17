@@ -12,6 +12,7 @@ if (process.env.ENVIRONMENT === 'test') {
   options = {
     dialect: 'sqlite',
     storage: './database.sqlite',
+    logging: false,
   };
 }
 
