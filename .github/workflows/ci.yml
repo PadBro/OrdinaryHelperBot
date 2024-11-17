@@ -37,7 +37,7 @@ jobs:
           MARIADB_ROOT_PASSWORD: password
         ports:
           - 3306:3306
-        options: --name mariadb-test
+        options: --health-cmd="mysqladmin ping --host=127.0.0.1 --user=root --password=password" --health-interval=5s --health-timeout=3s --health-retries=5
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
@@ -56,7 +56,6 @@ jobs:
       - name: Install MySQL client
         run: sudo apt-get install mysql-client
       - name: Test DB connection
-        continue-on-error: true
         run: mysql -h 127.0.0.1 -u user -ppassword -e "SHOW DATABASES;"
       - name: Run tests
         env:
