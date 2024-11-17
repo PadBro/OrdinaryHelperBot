@@ -25,7 +25,7 @@ jobs:
 
   run-tests:
     name: Test
-    # needs: run-linter
+    needs: run-linter
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository

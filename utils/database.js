@@ -8,8 +8,6 @@ let options = {
   dialect: 'mariadb',
 }
 
-console.log(process.env.ENVIRONMENT)
-
 if (process.env.ENVIRONMENT === 'test') {
   options = {
     dialect: 'sqlite',
