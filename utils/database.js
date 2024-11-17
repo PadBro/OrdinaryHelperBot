@@ -15,9 +15,6 @@ export const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     port: process.env.DB_PORT ?? 3306,
     dialect: 'mariadb',
-    dialectOptions: {
-        socketPath: "/var/run/mysqld/mysqld.sock"
-    },
     logging: process.env.ENVIRONMENT !== 'prod' ? Logger.debug : false,
   }
 );
