@@ -48,6 +48,8 @@ jobs:
         run: npm install --frozen-lockfile
       - name: Wait for Database to Start
         run: npx wait-on tcp:3306
+      - name: output containers
+        run: docker ps
       - name: Check MariaDB logs
         run: docker logs $(docker ps -q --filter "name=mariadb-test")
       - name: Install MySQL client
