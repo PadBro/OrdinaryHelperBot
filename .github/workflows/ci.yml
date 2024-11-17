@@ -37,6 +37,7 @@ jobs:
           MARIADB_ROOT_PASSWORD: password
         ports:
           - 3306:3306
+        options: --name mariadb-test
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
