@@ -26,9 +26,7 @@ export const data = new SlashCommandBuilder()
   .addSubcommand((subcommand) =>
     subcommand
       .setName('execute')
-      .setDescription(
-        'Remove inactive member roles and all linked roles'
-      )
+      .setDescription('Remove inactive member roles and all linked roles')
       .addIntegerOption((option) =>
         option
           .setName('days')
