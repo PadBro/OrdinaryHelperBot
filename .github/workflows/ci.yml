@@ -27,6 +27,9 @@ jobs:
     name: Test
     needs: run-linter
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
