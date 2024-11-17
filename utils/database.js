@@ -12,7 +12,7 @@ export const sequelize = new Sequelize(
   'user',
   'password',
   {
-    host: 'mariadb-test',
+    host: 'sdfefwryjm',
     port: 3306,
     dialect: 'mariadb',
     dialectOptions: {
