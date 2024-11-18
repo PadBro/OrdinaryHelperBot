@@ -10,16 +10,11 @@ export const handleReactionRole = async (reaction, user, type) => {
 
   const member = await reaction.message.guild.members.fetch(user.id);
   const emoji = reaction.emoji.toString();
-  let databaseEmoji = emoji;
-  const emojiRegex = /^(\p{Emoji})$/u;
-  if (emojiRegex.test(emoji)) {
-    databaseEmoji = emoji.codePointAt(0).toString(16);
-  }
   const role = await reactionRole.findOne({
     where: {
       channelId: reaction.message.channelId,
       messageId: reaction.message.id,
-      emoji: databaseEmoji,
+      emoji: emoji,
     },
   });
   if (!role) {
