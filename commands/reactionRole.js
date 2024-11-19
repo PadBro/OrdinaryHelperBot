@@ -69,6 +69,7 @@ export const execute = async (interaction) => {
 
 const addReactionRole = async (interaction) => {
   const discordChannelLinkBase = 'https://discord.com/channels/';
+  const discordCanaryLinkBase = 'https://canary.discord.com/channels/';
 
   const messageLink = interaction.options.getString('message');
   const emoji = interaction.options.getString('emoji');
@@ -82,7 +83,7 @@ const addReactionRole = async (interaction) => {
     return;
   }
 
-  if (!messageLink.includes(discordChannelLinkBase)) {
+  if (!messageLink.startsWith(discordChannelLinkBase) && !messageLink.startsWith(discordCanaryLinkBase)) {
     interaction.reply({
       content: 'The provided message link is not a discord message link.',
       ephemeral: true,
@@ -92,6 +93,7 @@ const addReactionRole = async (interaction) => {
 
   const [guildId, channelId, messageId] = messageLink
     .replace(discordChannelLinkBase, '')
+    .replace(discordCanaryLinkBase, '')
     .split('/');
   if (guildId !== interaction.guild.id) {
     interaction.reply({
