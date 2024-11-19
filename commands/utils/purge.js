@@ -1,6 +1,7 @@
 import { EmbedBuilder } from 'discord.js';
 import dayjs from 'dayjs';
 import { chunkData } from '../../utils/chunkData.js';
+import { removeRole } from '../../utils/roles.js';
 
 export const createEmbed = (members) => {
   const amountSubChunks = 3;
@@ -56,12 +57,11 @@ export const getMembersToPurge = async (interaction) => {
   const purgePeriod =
     interaction.options.getInteger('days') || process.env.PURGE_PERIOD_IN_DAYS;
   const nDaysAgo = dayjs().subtract(purgePeriod, 'day');
-  const specificRoleId = process.env.LINKED_ROLE_ID;
 
   const filteredMembers = role.members.filter((member) => {
     return (
       member.joinedTimestamp < nDaysAgo &&
-      !member.roles.cache.has(specificRoleId)
+      !member.roles.cache.has(process.env.LINKED_ROLE_ID)
     );
   });
   return filteredMembers;
@@ -74,7 +74,7 @@ export const removeLinkedRoles = async (interaction) => {
   const linkedRole = interaction.guild.roles.cache.get(
     process.env.LINKED_ROLE_ID
   );
-  memberRole.members.forEach((member) => member.roles.remove(linkedRole));
+  memberRole.members.forEach((member) => removeRole(member, linkedRole));
 };
 
 export const removeMemberRoles = async (interaction) => {
@@ -82,6 +82,6 @@ export const removeMemberRoles = async (interaction) => {
     process.env.MEMBER_ROLE_ID
   );
   const filteredMembers = await getMembersToPurge(interaction);
-  filteredMembers.forEach((member) => member.roles.remove(memberRole));
+  filteredMembers.forEach((member) => removeRole(member, memberRole));
   return filteredMembers;
 };
