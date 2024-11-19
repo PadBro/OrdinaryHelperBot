@@ -83,7 +83,10 @@ const addReactionRole = async (interaction) => {
     return;
   }
 
-  if (!messageLink.startsWith(discordChannelLinkBase) && !messageLink.startsWith(discordCanaryLinkBase)) {
+  if (
+    !messageLink.startsWith(discordChannelLinkBase) &&
+    !messageLink.startsWith(discordCanaryLinkBase)
+  ) {
     interaction.reply({
       content: 'The provided message link is not a discord message link.',
       ephemeral: true,
