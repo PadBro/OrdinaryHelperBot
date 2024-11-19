@@ -55,7 +55,7 @@ export const execute = async (interaction) => {
   } catch (e) {
     Logger.error(e);
     await interaction.reply({
-      content: `An error occurred while retrieving the FAQ entry. Please try again later. If this error persists, please report to the staff team.`,
+      content: `An error occurred while removing the FAQ. Please try again later. If this error persists, please report to the staff team.`,
       ephemeral: true,
     });
   }

@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { Client, Events, IntentsBitField } from 'discord.js';
+import { Client, Events, GatewayIntentBits, Partials } from 'discord.js';
 import { sequelize } from './utils/database.js';
 import models from './models/index.js';
 import {
@@ -14,18 +14,19 @@ import {
   modalHandler,
   commandsHandler,
   autocompleteHandler,
-} from './utils/interactionHandler/index.js';
+} from './events/interaction.js';
+import { handleReactionRole } from './events/reactionRole.js';
 
-const flags = [
-  IntentsBitField.Flags.Guilds,
-  IntentsBitField.Flags.GuildMembers,
-  IntentsBitField.Flags.GuildPresences,
+const intents = [
+  GatewayIntentBits.Guilds,
+  GatewayIntentBits.GuildMembers,
+  GatewayIntentBits.GuildPresences,
+  GatewayIntentBits.GuildMessages,
+  GatewayIntentBits.GuildMessageReactions,
 ];
+const partials = [Partials.Message, Partials.Channel, Partials.Reaction];
 
-const intents = new IntentsBitField();
-intents.add(flags);
-
-const client = new Client({ intents: [intents] });
+const client = new Client({ intents, partials });
 client.commands = await getCommands();
 client.modals = await getModals();
 
@@ -43,15 +44,23 @@ client.once(Events.ClientReady, (readyClient) => {
   Logger.debug(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
-client.on('guildMemberRemove', (member) => {
+client.on(Events.GuildMemberRemove, (member) => {
   const channel = client.channels.cache.get(process.env.LEAVE_CHANNEL);
   sendLeaveMessage(channel, member);
 });
 
-client.on('guildMemberAdd', (member) => {
+client.on(Events.GuildMemberAdd, async (member) => {
   if (process.env.JOIN_ROLE_ID) {
     addRole(member, process.env.JOIN_ROLE_ID);
   }
+});
+
+client.on(Events.MessageReactionAdd, async (reaction, user) => {
+  handleReactionRole(reaction, user, 'add');
+});
+
+client.on(Events.MessageReactionRemove, async (reaction, user) => {
+  handleReactionRole(reaction, user, 'remove');
 });
 
 try {
@@ -63,7 +72,11 @@ try {
 
 Logger.debug('syncing models');
 for (const model of models) {
-  await model.sync({ alter: true });
+  try {
+    await model.sync({ alter: true });
+  } catch (e) {
+    throw `${model.name}: ${e}`;
+  }
 }
 Logger.debug('models synced');
 
