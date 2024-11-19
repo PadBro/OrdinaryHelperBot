@@ -32,10 +32,10 @@ export const handleReactionRole = async (reaction, user, type) => {
 
   let embed = null;
 
-  if (type === 'add') {
+  if (type === 'add' && !member.roles.cache.has(serverRole.id)) {
     const result = await addRole(member, serverRole);
     embed = getAddEmbed(result, serverRole, reaction);
-  } else if (type === 'remove') {
+  } else if (type === 'remove' && member.roles.cache.has(serverRole.id)) {
     const result = await removeRole(member, serverRole);
     embed = getRemoveEmbed(result, serverRole, reaction);
   }
