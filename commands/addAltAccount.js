@@ -28,8 +28,7 @@ export const execute = async (interaction) => {
 
   const embed = new EmbedBuilder()
     .setColor('#f0833a')
-    .setDescription(`${member} - ${alt}`)
-    .setTimestamp();
+    .setDescription(`${member} - ${alt}`);
 
   try {
     await channel.send({ embeds: [embed] });
