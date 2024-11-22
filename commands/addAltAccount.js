@@ -22,16 +22,13 @@ export const data = new SlashCommandBuilder()
 export const execute = async (interaction) => {
   const member = interaction.options.getUser('member');
   const alt = interaction.options.getUser('alt');
-  const channel = interaction.guild.channels.cache.get(
-    process.env.ALT_ACCOUNT_CHANNEL
-  );
 
   const embed = new EmbedBuilder()
     .setColor('#f0833a')
     .setDescription(`${member} - ${alt}`);
 
   try {
-    await channel.send({ embeds: [embed] });
+    await interaction.channel.send({ embeds: [embed] });
   } catch (e) {
     Logger.error(`Could not add alt account: ${e}`);
     interaction.reply({
