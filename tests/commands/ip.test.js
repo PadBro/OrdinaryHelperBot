@@ -1,4 +1,4 @@
-import { expect, test, vi } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import { execute } from '../../commands/ip.js';
 import fetch from 'node-fetch';
 
@@ -6,7 +6,7 @@ const interaction = {
   reply: vi.fn(),
 };
 
-test('can retrive ip', async () => {
+it('can retrive ip', async () => {
   vi.mock('node-fetch');
   fetch.mockReturnValue(
     Promise.resolve({ text: () => Promise.resolve('127.0.0.1') })

@@ -3,10 +3,7 @@ import Paginate from '../../../commands/utils/paginate.js';
 
 let mockInteraction;
 let onMock;
-let mockEmbeds = [
-  { setFooter: vi.fn() },
-  { setFooter: vi.fn() },
-];;
+let mockEmbeds = [{ setFooter: vi.fn() }, { setFooter: vi.fn() }];
 
 beforeEach(() => {
   onMock = vi.fn();
@@ -19,9 +16,9 @@ beforeEach(() => {
 
   mockInteraction.reply.mockResolvedValue({
     createMessageComponentCollector: vi.fn().mockReturnValue({
-      on: onMock
-    })
-  })
+      on: onMock,
+    }),
+  });
 });
 
 it('should reply with "No data found!" if no embeds are provided', async () => {
@@ -35,7 +32,6 @@ it('should reply with "No data found!" if no embeds are provided', async () => {
 });
 
 it('should render the first embed correctly', async () => {
-
   const paginator = new Paginate(mockInteraction, mockEmbeds);
   await paginator.paginate();
 
@@ -64,7 +60,7 @@ it('should handle "previous" button interaction correctly', async () => {
         update: vi.fn(),
       });
     }
-  })
+  });
 
   mockInteraction.reply.mockResolvedValue({
     createMessageComponentCollector: vi.fn().mockReturnValue({ on: onMock }),
@@ -96,7 +92,7 @@ it('should handle "next" button interaction correctly', async () => {
         update: vi.fn(),
       });
     }
-  })
+  });
 
   mockInteraction.reply.mockResolvedValue({
     createMessageComponentCollector: vi.fn().mockReturnValue({ on: onMock }),
@@ -125,7 +121,7 @@ it('should handle interaction expiration', async () => {
     if (event === 'end') {
       callback();
     }
-  })
+  });
 
   mockInteraction.reply.mockResolvedValue({
     createMessageComponentCollector: vi.fn().mockReturnValue({ on: onMock }),

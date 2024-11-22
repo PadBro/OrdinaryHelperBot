@@ -1,14 +1,14 @@
-import { expect, test, vi } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import { hasPermission } from '../../../commands/utils/hasPermission.js';
 
 const interaction = {
   memberPermissions: {
-    has: vi.fn()
+    has: vi.fn(),
   },
-  reply: vi.fn()
+  reply: vi.fn(),
 };
 
-test('returns true if permission exists', async () => {
+it('returns true if permission exists', async () => {
   interaction.memberPermissions.has.mockReturnValue(true);
 
   const result = await hasPermission(interaction, '123');
@@ -16,7 +16,7 @@ test('returns true if permission exists', async () => {
   expect(result).toBe(true);
 });
 
-test('returns false if permission is missing and sends message', async () => {
+it('returns false if permission is missing and sends message', async () => {
   interaction.memberPermissions.has.mockReturnValue(false);
 
   const result = await hasPermission(interaction, '123');

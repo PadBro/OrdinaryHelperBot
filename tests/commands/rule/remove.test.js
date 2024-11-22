@@ -1,4 +1,4 @@
-import { expect, test, vi } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import { execute, autocomplete } from '../../../commands/rule/remove.js';
 import { rule } from '../../../models/rule.js';
 
@@ -11,7 +11,7 @@ const interaction = {
   reply: vi.fn(),
 };
 
-test('can retrive autocomplete', async () => {
+it('can retrive autocomplete', async () => {
   await rule.bulkCreate([
     {
       number: 2,
@@ -34,11 +34,11 @@ test('can retrive autocomplete', async () => {
   ]);
 });
 
-test('can execute', async () => {
+it('can execute', async () => {
   const ruleModel = await rule.create({
-      number: 2,
-      name: 'Test',
-      rule: 'Testing',
+    number: 2,
+    name: 'Test',
+    rule: 'Testing',
   });
 
   interaction.options.getString.mockReturnValue(`${ruleModel.id}`);
@@ -58,11 +58,11 @@ test('can execute', async () => {
   expect(removedrule).toBeNull();
 });
 
-test('return error if rule is not found', async () => {
+it('return error if rule is not found', async () => {
   await rule.create({
-      number: 2,
-      name: 'Test',
-      rule: 'Testing',
+    number: 2,
+    name: 'Test',
+    rule: 'Testing',
   });
 
   interaction.options.getString.mockReturnValue('0');

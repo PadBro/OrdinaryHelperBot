@@ -1,4 +1,4 @@
-import { expect, test, vi } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import { execute, autocomplete } from '../../../commands/faq/remove.js';
 import { faq } from '../../../models/faq.js';
 
@@ -11,7 +11,7 @@ const interaction = {
   reply: vi.fn(),
 };
 
-test('can retrive autocomplete', async () => {
+it('can retrive autocomplete', async () => {
   await faq.bulkCreate([
     {
       id: 1,
@@ -34,7 +34,7 @@ test('can retrive autocomplete', async () => {
   ]);
 });
 
-test('can execute', async () => {
+it('can execute', async () => {
   const faqModel = await faq.create({
     question: 'Test',
     answer: 'Testing',
@@ -57,7 +57,7 @@ test('can execute', async () => {
   expect(removedFaq).toBeNull();
 });
 
-test('return error if faq is not found', async () => {
+it('returns error if faq is not found', async () => {
   await faq.create({
     question: 'Test',
     answer: 'Testing',
