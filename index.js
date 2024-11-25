@@ -1,5 +1,11 @@
 import 'dotenv/config';
-import { Client, Events, GatewayIntentBits, Partials } from 'discord.js';
+import {
+  Client,
+  Events,
+  GatewayIntentBits,
+  Partials,
+  ActivityType,
+} from 'discord.js';
 import { sequelize } from './utils/database.js';
 import models from './models/index.js';
 import {
@@ -42,6 +48,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.once(Events.ClientReady, (readyClient) => {
   Logger.debug(`Ready! Logged in as ${readyClient.user.tag}`);
+  readyClient.user.setActivity('on play.ordinary-smp.com', {
+    type: ActivityType.Playing,
+  });
 });
 
 client.on(Events.GuildMemberRemove, (member) => {
