@@ -4,16 +4,16 @@ import { execute } from '../../commands/addAltAccount.js';
 const interaction = {
   reply: vi.fn(),
   channel: {
-    send: vi.fn()
+    send: vi.fn(),
   },
   options: {
-    getUser: vi.fn((key) => key)
-  }
+    getUser: vi.fn((key) => key),
+  },
 };
 
 beforeEach(() => {
-  vi.clearAllMocks()
-})
+  vi.clearAllMocks();
+});
 
 it('can add a alt account', async () => {
   await execute(interaction);
@@ -23,11 +23,11 @@ it('can add a alt account', async () => {
       {
         data: {
           color: 15762234,
-          "description": "member - alt",
-        }
-      }
-    ]
-  })
+          description: 'member - alt',
+        },
+      },
+    ],
+  });
   expect(interaction.reply).toBeCalledWith({
     content: 'Alt account was added',
     ephemeral: true,
@@ -40,7 +40,8 @@ it('handles error', async () => {
   await execute(interaction);
 
   expect(interaction.reply).toBeCalledWith({
-    content: 'An error occurred while adding the alt account. Please try again later. If this error persists, please report to the staff team.',
+    content:
+      'An error occurred while adding the alt account. Please try again later. If this error persists, please report to the staff team.',
     ephemeral: true,
   });
 });

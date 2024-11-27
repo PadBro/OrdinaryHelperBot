@@ -1,7 +1,12 @@
 import { it, vi, expect, beforeEach } from 'vitest';
 import { EmbedBuilder, Collection } from 'discord.js';
-import dayjs from "dayjs"
-import { createEmbed, getMembersToPurge, removeLinkedRoles, removeMemberRoles } from '../../../commands/utils/purge.js';
+import dayjs from 'dayjs';
+import {
+  createEmbed,
+  getMembersToPurge,
+  removeLinkedRoles,
+  removeMemberRoles,
+} from '../../../commands/utils/purge.js';
 import { removeRole } from '../../../utils/roles.js';
 
 vi.mock('discord.js', () => {
@@ -59,8 +64,22 @@ beforeEach(() => {
   memberRole = {
     id: '12345',
     members: new Collection([
-      ['1', { id: '1', joinedTimestamp: dayjs().subtract(45, 'day'), roles: { cache: new Map() } }],
-      ['2', { id: '2', joinedTimestamp: dayjs().subtract(10, 'day'), roles: { cache: new Map() } }],
+      [
+        '1',
+        {
+          id: '1',
+          joinedTimestamp: dayjs().subtract(45, 'day'),
+          roles: { cache: new Map() },
+        },
+      ],
+      [
+        '2',
+        {
+          id: '2',
+          joinedTimestamp: dayjs().subtract(10, 'day'),
+          roles: { cache: new Map() },
+        },
+      ],
     ]),
   };
 
@@ -86,47 +105,41 @@ beforeEach(() => {
 });
 
 it('can createEmbed', async () => {
-  const members = [
-    'Alice',
-    'Bob',
-    '<@123>',
-    'Charlie',
-    'David',
-    '_Eve_',
-  ];
+  const members = ['Alice', 'Bob', '<@123>', 'Charlie', 'David', '_Eve_'];
 
   createEmbed(members);
 
   const embedBuilderInstance = EmbedBuilder.mock.results[0].value;
   expect(embedBuilderInstance.setTitle).toHaveBeenCalledWith('Purge');
   expect(embedBuilderInstance.setColor).toHaveBeenCalledWith('#ce361e');
-  expect(embedBuilderInstance.setDescription).toHaveBeenCalledWith(`${members.length} members purged`);
+  expect(embedBuilderInstance.setDescription).toHaveBeenCalledWith(
+    `${members.length} members purged`
+  );
   expect(embedBuilderInstance.setTimestamp).toHaveBeenCalled();
   expect(embedBuilderInstance.setFields).toHaveBeenCalledWith([
     {
       inline: true,
-      name: "\u200B",
-      value: "\\_Eve\\_\nAlice\u200B",
+      name: '\u200B',
+      value: '\\_Eve\\_\nAlice\u200B',
     },
     {
       inline: true,
-      name: "\u200B",
-      value: "Bob\nCharlie\u200B",
+      name: '\u200B',
+      value: 'Bob\nCharlie\u200B',
     },
     {
       inline: true,
-      name: "\u200B",
-      value: "David\n<@123>\u200B",
+      name: '\u200B',
+      value: 'David\n<@123>\u200B',
     },
   ]);
-
-})
+});
 
 it('can getMembersToPurge', async () => {
   const members = await getMembersToPurge(interaction);
   expect(members.size).toBe(1);
-  expect(members.entries().next().value[1].id).toBe("1");
-})
+  expect(members.entries().next().value[1].id).toBe('1');
+});
 
 it('removeLinkedRoles removes linked roles from all members', async () => {
   await removeLinkedRoles(interaction);
