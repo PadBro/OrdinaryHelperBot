@@ -61,7 +61,8 @@ export const getMembersToPurge = async (interaction) => {
   const filteredMembers = role.members.filter((member) => {
     return (
       member.joinedTimestamp < nDaysAgo &&
-      !member.roles.cache.has(process.env.LINKED_ROLE_ID)
+      !member.roles.cache.has(process.env.LINKED_ROLE_ID) &&
+      !member.roles.cache.has(process.env.PURGE_IMMUNITY_ROLE_ID)
     );
   });
   return filteredMembers;

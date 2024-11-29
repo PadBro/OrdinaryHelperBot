@@ -56,10 +56,13 @@ vi.mock('../../../utils/roles.js', () => ({
   removeRole: vi.fn(),
 }));
 
-let interaction, memberRole, linkedRole;
+let interaction, memberRole, linkedRole, ImmunityRole;
 
 beforeEach(() => {
   vi.clearAllMocks();
+
+  linkedRole = { id: '67890' };
+  ImmunityRole = { id: '13579' };
 
   memberRole = {
     id: '12345',
@@ -80,10 +83,24 @@ beforeEach(() => {
           roles: { cache: new Map() },
         },
       ],
+      [
+        '3',
+        {
+          id: '3',
+          joinedTimestamp: dayjs().subtract(45, 'day'),
+          roles: { cache: new Collection([['67890', linkedRole]]) },
+        },
+      ],
+      [
+        '4',
+        {
+          id: '4',
+          joinedTimestamp: dayjs().subtract(45, 'day'),
+          roles: { cache: new Collection([['13579', ImmunityRole]]) },
+        },
+      ],
     ]),
   };
-
-  linkedRole = { id: '67890' };
 
   interaction = {
     guild: {
@@ -91,6 +108,7 @@ beforeEach(() => {
         cache: new Collection([
           ['12345', memberRole],
           ['67890', linkedRole],
+          ['13579', ImmunityRole],
         ]),
       },
     },
@@ -101,6 +119,7 @@ beforeEach(() => {
 
   process.env.MEMBER_ROLE_ID = '12345';
   process.env.LINKED_ROLE_ID = '67890';
+  process.env.PURGE_IMMUNITY_ROLE_ID = '13579';
   process.env.PURGE_PERIOD_IN_DAYS = 30;
 });
 
@@ -147,7 +166,7 @@ it('removeLinkedRoles removes linked roles from all members', async () => {
   memberRole.members.forEach((member) => {
     expect(removeRole).toHaveBeenCalledWith(member, linkedRole);
   });
-  expect(removeRole).toHaveBeenCalledTimes(2);
+  expect(removeRole).toHaveBeenCalledTimes(4);
 });
 
 it('removeMemberRoles removes member roles from filtered members', async () => {
