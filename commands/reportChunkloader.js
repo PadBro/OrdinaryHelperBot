@@ -11,22 +11,13 @@ export const data = new SlashCommandBuilder()
   .setDescription('Report a chunkloader')
   .setDefaultMemberPermissions(PermissionFlagsBits.ViewAuditLog)
   .addIntegerOption((option) =>
-    option
-      .setName('x')
-      .setDescription('The X coordinate.')
-      .setRequired(true)
+    option.setName('x').setDescription('The X coordinate.').setRequired(true)
   )
   .addIntegerOption((option) =>
-    option
-      .setName('y')
-      .setDescription('The Y coordinate.')
-      .setRequired(true)
+    option.setName('y').setDescription('The Y coordinate.').setRequired(true)
   )
   .addIntegerOption((option) =>
-    option
-      .setName('z')
-      .setDescription('The Z coordinate.')
-      .setRequired(true)
+    option.setName('z').setDescription('The Z coordinate.').setRequired(true)
   )
   .addStringOption((option) =>
     option
@@ -36,18 +27,14 @@ export const data = new SlashCommandBuilder()
       .addChoices(
         { name: 'Overworld', value: 'overworld' },
         { name: 'Nether', value: 'nether' },
-        { name: 'End', value: 'end' },
-      ),
+        { name: 'End', value: 'end' }
+      )
   )
   .addStringOption((option) =>
-    option
-      .setName('additional')
-      .setDescription('Additional information.'),
+    option.setName('additional').setDescription('Additional information.')
   )
   .addUserOption((option) =>
-    option
-      .setName('member')
-      .setDescription('The owner of the chunkloader.'),
+    option.setName('member').setDescription('The owner of the chunkloader.')
   );
 
 export const execute = async (interaction) => {
@@ -58,53 +45,61 @@ export const execute = async (interaction) => {
   const additional = interaction.options.getString('additional');
   const user = interaction.options.getUser('member') ?? interaction.user;
 
-
-  if (!hasPermission(interaction, PermissionFlagsBits.ViewAuditLog) && user !== interaction.user) {
+  if (
+    !hasPermission(interaction, PermissionFlagsBits.ViewAuditLog) &&
+    user !== interaction.user
+  ) {
     interaction.reply({
-      content: "You can not report a chunkloader for other members.",
+      content: 'You can not report a chunkloader for other members.',
       ephemeral: true,
     });
-    return
+    return;
   }
 
   const coordinates = {
     Overworld: null,
     Nether: null,
     End: null,
-  }
-  let color = ''
+  };
+  let color = '';
 
   switch (dimension) {
     case 'overworld':
-      color = '#00ff00'
-      coordinates.Overworld = { x, y, z }
-      coordinates.Nether = { x: Math.round(x / 8), y, z: Math.round(z / 8) }
+      color = '#00ff00';
+      coordinates.Overworld = { x, y, z };
+      coordinates.Nether = { x: Math.round(x / 8), y, z: Math.round(z / 8) };
       break;
     case 'nether':
-      color = '#ff0000'
-      coordinates.Nether = { x, y, z }
-      coordinates.Overworld = { x: x * 8, y, z: z * 8 }
+      color = '#ff0000';
+      coordinates.Nether = { x, y, z };
+      coordinates.Overworld = { x: x * 8, y, z: z * 8 };
       break;
     case 'end':
-      color = '#000000'
-      coordinates.End = { x, y, z }
+      color = '#000000';
+      coordinates.End = { x, y, z };
       break;
   }
   const fields = Object.entries(coordinates)
     .filter(([, localCoordinates]) => localCoordinates !== null)
     .map(([localDimension, localCoordinates]) => ({
       name: `${localDimension}:`,
-      value: `X: ${localCoordinates.x}\nY: ${localCoordinates.y}\nZ: ${localCoordinates.z}\n` +
-        '```/tp @p ' + localCoordinates.x + ' ' + localCoordinates.y + ' ' + localCoordinates.z + '```',
-      inline: true
-    }))
-
+      value:
+        `X: ${localCoordinates.x}\nY: ${localCoordinates.y}\nZ: ${localCoordinates.z}\n` +
+        '```/tp @p ' +
+        localCoordinates.x +
+        ' ' +
+        localCoordinates.y +
+        ' ' +
+        localCoordinates.z +
+        '```',
+      inline: true,
+    }));
 
   const description = [
     `**Chunkloader from**: ${user}`,
     `**Dimension**: ${dimension}`,
-    additional ? '**Additional information**:' + '\n`' + additional +'`' : '',
-  ]
+    additional ? '**Additional information**:' + '\n`' + additional + '`' : '',
+  ];
 
   const embed = new EmbedBuilder()
     .setColor(color)
@@ -114,20 +109,23 @@ export const execute = async (interaction) => {
     .setTimestamp();
 
   try {
-    const channel = interaction.guild.channels.cache.get(process.env.LEAVE_CHANNEL);
+    const channel = interaction.guild.channels.cache.get(
+      process.env.CHUNKLOADER_CHANNEL
+    );
     await channel.send({
-      embeds: [embed]
-    })
-  } catch(e) {
-    Logger.error(`Could not report chunkloader: ${e}`)
+      embeds: [embed],
+    });
+  } catch (e) {
+    Logger.error(`Could not report chunkloader: ${e}`);
     await interaction.reply({
-      content: "An error occurred while reporting your chunkloader. Please try again later. If this error persists, please report to the staff team.",
+      content:
+        'An error occurred while reporting your chunkloader. Please try again later. If this error persists, please report to the staff team.',
       ephemeral: true,
     });
   }
 
   await interaction.reply({
-    content: "Thank you for reporting your chunkloader.",
+    content: 'Thank you for reporting your chunkloader.',
     ephemeral: true,
   });
 };
