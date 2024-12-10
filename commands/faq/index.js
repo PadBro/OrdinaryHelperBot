@@ -2,6 +2,7 @@ import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { faq } from '../../models/faq.js';
 import { Op } from 'sequelize';
 import Logger from '../../utils/logger.js';
+import { apiFetch } from '../../utils/apiFetch.js';
 
 export const data = new SlashCommandBuilder()
   .setName('faq')
@@ -16,16 +17,15 @@ export const data = new SlashCommandBuilder()
 
 export const autocomplete = async (interaction) => {
   const inputValue = interaction.options.getFocused();
+  let faqPath = "/faqs";
+  if (inputValue) {
+    faqPath = `${faqPath}?filter[question]=${inputValue}`
+  }
 
-  const faqs = await faq.findAll({
-    where: {
-      question: {
-        [Op.like]: `${inputValue}%`,
-      },
-    },
-  });
+  const response = await apiFetch(faqPath);
+  const faqResponse = await response.json()
   await interaction.respond(
-    faqs.map((faq) => ({ name: faq.question, value: `${faq.id}` }))
+    faqResponse.data.map((faq) => ({ name: faq.question, value: `${faq.id}` }))
   );
 };
 
@@ -33,11 +33,10 @@ export const execute = async (interaction) => {
   const faqId = interaction.options.getString('question');
 
   try {
-    const askedFaq = await faq.findOne({
-      where: {
-        id: faqId,
-      },
-    });
+    const response = await apiFetch(`/faqs?filter[id]=${faqId}`);
+    const faqResponse = await response.json()
+    const askedFaq = faqResponse?.data?.[0]
+
     if (!askedFaq) {
       await interaction.reply({
         content:

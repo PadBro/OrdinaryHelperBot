@@ -72,22 +72,22 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
   handleReactionRole(reaction, user, 'remove');
 });
 
-try {
-  await sequelize.authenticate();
-  Logger.debug('Connection to the database has been established successfully.');
-} catch (error) {
-  Logger.error('Unable to connect to the database:', error);
-}
+// try {
+//   await sequelize.authenticate();
+//   Logger.debug('Connection to the database has been established successfully.');
+// } catch (error) {
+//   Logger.error('Unable to connect to the database:', error);
+// }
 
-Logger.debug('syncing models');
-for (const model of models) {
-  try {
-    await model.sync({ alter: true });
-  } catch (e) {
-    throw `${model.name}: ${e}`;
-  }
-}
-Logger.debug('models synced');
+// Logger.debug('syncing models');
+// for (const model of models) {
+//   try {
+//     await model.sync({ alter: true });
+//   } catch (e) {
+//     throw `${model.name}: ${e}`;
+//   }
+// }
+// Logger.debug('models synced');
 
 deployCommands();
 client.login(process.env.DISCORD_TOKEN);
