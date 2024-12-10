@@ -55,16 +55,16 @@ export const execute = async (interaction) => {
   const subcommand = interaction.options.getSubcommand();
   switch (subcommand) {
     case 'preview':
-      previewPurge(interaction);
+      await previewPurge(interaction);
       break;
     case 'execute':
-      executePurge(interaction);
+      await executePurge(interaction);
       break;
     case 'remove-member':
-      removeMembers(interaction);
+      await removeMembers(interaction);
       break;
     case 'remove-linked':
-      removeLinked(interaction);
+      await removeLinked(interaction);
       break;
     default:
       interaction.reply('command not found');
