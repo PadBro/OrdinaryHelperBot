@@ -2,8 +2,10 @@ import {
   SlashCommandBuilder,
   PermissionFlagsBits,
   EmbedBuilder,
+  ButtonStyle,
 } from 'discord.js';
 import { hasPermission } from './utils/hasPermission.js';
+import { confirmAction } from './utils/confirmAction.js';
 import Logger from '../utils/logger.js';
 
 export const data = new SlashCommandBuilder()
@@ -108,6 +110,17 @@ export const execute = async (interaction) => {
     .setThumbnail(user.displayAvatarURL())
     .setTimestamp();
 
+    const confirmed = await confirmAction(
+      interaction,
+      'Do you want to report this Chunkloader?',
+      'Report',
+      ButtonStyle.Success,
+      [embed]
+    );
+    if (!confirmed) {
+      return;
+    }
+
   try {
     const channel = interaction.guild.channels.cache.get(
       process.env.CHUNKLOADER_CHANNEL
@@ -117,14 +130,14 @@ export const execute = async (interaction) => {
     });
   } catch (e) {
     Logger.error(`Could not report chunkloader: ${e}`);
-    await interaction.reply({
+    await interaction.editReply({
       content:
         'An error occurred while reporting your chunkloader. Please try again later. If this error persists, please report to the staff team.',
       ephemeral: true,
     });
   }
 
-  await interaction.reply({
+  await interaction.editReply({
     content: 'Thank you for reporting your chunkloader.',
     ephemeral: true,
   });

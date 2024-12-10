@@ -3,12 +3,14 @@ import { ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
 export const confirmAction = async (
   interaction,
   confirmMessage,
-  confirmLabel
+  confirmLabel,
+  confirmStyle = ButtonStyle.Danger,
+  embeds = null
 ) => {
   const confirm = new ButtonBuilder()
     .setCustomId('confirm')
     .setLabel(confirmLabel)
-    .setStyle(ButtonStyle.Danger);
+    .setStyle(confirmStyle);
 
   const cancel = new ButtonBuilder()
     .setCustomId('cancel')
@@ -20,6 +22,7 @@ export const confirmAction = async (
   const response = await interaction.reply({
     content: confirmMessage,
     components: [row],
+    embeds: embeds,
     ephemeral: true,
   });
   const collectorFilter = (i) => i.user.id === interaction.user.id;
@@ -33,6 +36,7 @@ export const confirmAction = async (
     if (confirmation.customId === 'confirm') {
       await confirmation.update({
         content: 'executing command',
+        embeds: [],
         components: [],
       });
       return true;
@@ -40,6 +44,7 @@ export const confirmAction = async (
       await confirmation.update({
         content: 'Action cancelled',
         components: [],
+        embeds: [],
         ephemeral: true,
       });
       return false;
@@ -48,6 +53,7 @@ export const confirmAction = async (
     await interaction.editReply({
       content: 'Confirmation not received within 1 minute, cancelling',
       components: [],
+      embeds: [],
     });
     return false;
   }
