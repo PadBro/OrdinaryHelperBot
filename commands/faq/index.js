@@ -1,6 +1,4 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { faq } from '../../models/faq.js';
-import { Op } from 'sequelize';
 import Logger from '../../utils/logger.js';
 import { apiFetch } from '../../utils/apiFetch.js';
 
@@ -17,12 +15,13 @@ export const data = new SlashCommandBuilder()
 
 export const autocomplete = async (interaction) => {
   const inputValue = interaction.options.getFocused();
-  let faqPath = "/faqs";
-  if (inputValue) {
-    faqPath = `${faqPath}?filter[question]=${inputValue}`
-  }
 
-  const response = await apiFetch(faqPath);
+  const response = await apiFetch("/faqs", {
+    method: "GET",
+    query: {
+      "filter[question]": inputValue
+    }
+  });
   const faqResponse = await response.json()
   await interaction.respond(
     faqResponse.data.map((faq) => ({ name: faq.question, value: `${faq.id}` }))
@@ -33,7 +32,12 @@ export const execute = async (interaction) => {
   const faqId = interaction.options.getString('question');
 
   try {
-    const response = await apiFetch(`/faqs?filter[id]=${faqId}`);
+    const response = await apiFetch("/faqs", {
+      method: "GET",
+      query: {
+        "filter[id]": faqId
+      }
+    });
     const faqResponse = await response.json()
     const askedFaq = faqResponse?.data?.[0]
 

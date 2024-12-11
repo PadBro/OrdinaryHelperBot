@@ -1,7 +1,7 @@
 import { EmbedBuilder } from 'discord.js';
-import { reactionRole } from '../models/reactionRole.js';
 import { addRole, removeRole } from '../utils/roles.js';
 import Logger from '../utils/logger.js';
+import { apiFetch } from '../utils/apiFetch.js';
 
 export const handleReactionRole = async (reaction, user, type) => {
   if (user.bot) {
@@ -10,23 +10,28 @@ export const handleReactionRole = async (reaction, user, type) => {
 
   const member = await reaction.message.guild.members.fetch(user.id);
   const emoji = reaction.emoji.toString();
-  const role = await reactionRole.findOne({
-    where: {
-      channelId: reaction.message.channelId,
-      messageId: reaction.message.id,
-      emoji: emoji,
-    },
+
+  const response = await apiFetch("/reaction-roles", {
+    method: "GET",
+    query: {
+      "filter[channel_id]": reaction.message.channelId,
+      "filter[message_id]": reaction.message.id,
+      "filter[emoji]": emoji,
+    }
   });
-  if (!role) {
+  const reactionRoleResponse = await response.json()
+
+  if (!reactionRoleResponse?.data?.[0]) {
     return;
   }
+  const role = reactionRoleResponse.data[0]
 
   const serverRole = reaction.message.guild.roles.cache.find(
-    (guildRole) => guildRole.id === role.roleId
+    (guildRole) => guildRole.id === role.role_id
   );
 
   if (!serverRole) {
-    Logger.warning(`The role with the ID ${role.roleId} was not found.`);
+    Logger.warning(`The role with the ID ${role.role_id} was not found.`);
     return;
   }
 

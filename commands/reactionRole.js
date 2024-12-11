@@ -5,8 +5,7 @@ import {
 } from 'discord.js';
 import Logger from '../utils/logger.js';
 import Paginate from './utils/paginate.js';
-import { reactionRole } from '../models/reactionRole.js';
-import { isValidEmoji } from '../utils/emoji.js';
+import { apiFetch } from '../utils/apiFetch.js';
 
 export const data = new SlashCommandBuilder()
   .setName('reaction-role')
@@ -68,87 +67,32 @@ export const execute = async (interaction) => {
 };
 
 const addReactionRole = async (interaction) => {
-  const discordChannelLinkBase = 'https://discord.com/channels/';
-  const discordCanaryLinkBase = 'https://canary.discord.com/channels/';
-
   const messageLink = interaction.options.getString('message');
   const emoji = interaction.options.getString('emoji');
   const role = interaction.options.getRole('role');
 
-  if (role.name === '@everyone') {
-    interaction.reply({
-      content: 'The role can not be @everyone.',
-      ephemeral: true,
-    });
-    return;
-  }
-
-  if (
-    !messageLink.startsWith(discordChannelLinkBase) &&
-    !messageLink.startsWith(discordCanaryLinkBase)
-  ) {
-    interaction.reply({
-      content: 'The provided message link is not a discord message link.',
-      ephemeral: true,
-    });
-    return;
-  }
-
-  const [guildId, channelId, messageId] = messageLink
-    .replace(discordChannelLinkBase, '')
-    .replace(discordCanaryLinkBase, '')
-    .split('/');
-  if (guildId !== interaction.guild.id) {
-    interaction.reply({
-      content: 'The provided link is not from this server.',
-      ephemeral: true,
-    });
-    return;
-  }
-
-  const channel = await interaction.guild.channels.fetch(channelId);
-  if (!channel) {
-    interaction.reply({
-      content: 'The channel was not found on this server.',
-      ephemeral: true,
-    });
-    return;
-  }
-  const message = await channel.messages.fetch(messageId);
-  if (!message) {
-    interaction.reply({
-      content: 'The message was not found on this server.',
-      ephemeral: true,
-    });
-    return;
-  }
-
-  if (!isValidEmoji(emoji, interaction.guild.emojis)) {
-    interaction.reply({
-      content: 'The emoji is not valid.',
-      ephemeral: true,
-    });
-    return;
-  }
 
   try {
-    await message.react(emoji);
-  } catch (e) {
-    Logger.error(`An error occoured while creating a reaction role: ${e}`);
-    await interaction.reply({
-      content: 'Could not react to message.',
-      ephemeral: true,
+    const response = await apiFetch("/reaction-roles", {
+      method: "POST",
+      body: {
+        message_link: messageLink,
+        emoji: emoji,
+        role_id: role.id,
+      }
     });
-    return;
-  }
+    const createResponse = await response.json()
 
-  try {
-    await reactionRole.create({
-      messageId,
-      channelId,
-      emoji: emoji,
-      roleId: role.id,
-    });
+    if (createResponse.errors) {
+      const errors = Object.entries(createResponse.errors).map(([key, values]) => {
+        return `**${key}**\n${values.join("\n")}`
+      }).join("\n\n")
+      await interaction.reply({
+        content: errors,
+        ephemeral: true,
+      });
+      return
+    }
 
     await interaction.reply({
       content: 'Reaction role was created.',
@@ -164,18 +108,25 @@ const addReactionRole = async (interaction) => {
 };
 
 const listReactionRole = async (interaction) => {
-  const reactionRoles = await reactionRole.findAll();
+  const response = await apiFetch("/reaction-roles", {
+    method: "GET",
+    query: {
+      full: true
+    }
+  });
+  const reactionRoles = await response.json()
+
   const rolesOrderedByMessage = {};
   const embeds = [];
   for (const role of reactionRoles) {
-    if (!rolesOrderedByMessage[role.messageId]) {
+    if (!rolesOrderedByMessage[role.message_id]) {
       let channel;
       let message;
       try {
         channel = await interaction.guild.channels.cache.find(
-          (channel) => `${role.channelId}` === `${channel.id}`
+          (channel) => `${role.channel_id}` === `${channel.id}`
         );
-        message = await channel.messages.fetch(role.messageId);
+        message = await channel.messages.fetch(role.message_id);
       } catch (e) {
         // Unknown message || Unknown channel
         if (e.code === 10008 || e.code === 10003) {
@@ -193,15 +144,15 @@ const listReactionRole = async (interaction) => {
         return;
       }
 
-      rolesOrderedByMessage[role.messageId] = {
+      rolesOrderedByMessage[role.message_id] = {
         message,
         reactionRoles: [],
       };
     }
     role.role = await interaction.guild.roles.cache.find(
-      (guildRole) => guildRole.id === role.roleId
+      (guildRole) => guildRole.id === role.role_id
     );
-    rolesOrderedByMessage[role.messageId].reactionRoles.push(role);
+    rolesOrderedByMessage[role.message_id].reactionRoles.push(role);
   }
 
   Object.values(rolesOrderedByMessage).forEach((value) => {
@@ -227,36 +178,9 @@ const listReactionRole = async (interaction) => {
 const removeReactionRole = async (interaction) => {
   const reactionRoleId = interaction.options.getString('reaction-role-id');
 
-  const toBeRemovedReactionRole = await reactionRole.findOne({
-    where: {
-      id: reactionRoleId,
-    },
-  });
-  if (!toBeRemovedReactionRole) {
-    await interaction.reply({
-      content: 'The reaction role was not found.',
-      ephemeral: true,
-    });
-
-    return;
-  }
   try {
-    const channel = await interaction.guild.channels.cache.find(
-      (channel) => `${toBeRemovedReactionRole.channelId}` === `${channel.id}`
-    );
-    const message = await channel.messages.fetch(
-      toBeRemovedReactionRole.messageId
-    );
-    await message.reactions.cache.get(toBeRemovedReactionRole.emoji).remove();
-  } catch {
-    // the channel, message or reaction is already removed
-  }
-
-  try {
-    await reactionRole.destroy({
-      where: {
-        id: reactionRoleId,
-      },
+    await apiFetch(`/reaction-roles/${reactionRoleId}`, {
+      method: "DELETE"
     });
 
     await interaction.reply({

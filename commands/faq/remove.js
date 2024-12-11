@@ -1,7 +1,6 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
-import { faq } from '../../models/faq.js';
-import { Op } from 'sequelize';
 import Logger from '../../utils/logger.js';
+import { apiFetch } from '../../utils/apiFetch.js';
 
 export const data = new SlashCommandBuilder()
   .setName('faq-remove')
@@ -18,15 +17,15 @@ export const data = new SlashCommandBuilder()
 export const autocomplete = async (interaction) => {
   const inputValue = interaction.options.getFocused();
 
-  const faqs = await faq.findAll({
-    where: {
-      question: {
-        [Op.like]: `${inputValue}%`,
-      },
-    },
+  const response = await apiFetch("/faqs", {
+    method: "GET",
+    query: {
+      "filter[question]": inputValue
+    }
   });
+  const faqResponse = await response.json()
   await interaction.respond(
-    faqs.map((faq) => ({ name: faq.question, value: `${faq.id}` }))
+    faqResponse.data.map((faq) => ({ name: faq.question, value: `${faq.id}` }))
   );
 };
 
@@ -34,11 +33,11 @@ export const execute = async (interaction) => {
   const faqId = interaction.options.getString('question');
 
   try {
-    const result = await faq.destroy({
-      where: {
-        id: faqId,
-      },
+    const response = await apiFetch(`/faqs/${faqId}`, {
+      method: "DELETE"
     });
+    const result = await response.text()
+
     if (result === 0) {
       await interaction.reply({
         content: 'The FAQ was not found.',

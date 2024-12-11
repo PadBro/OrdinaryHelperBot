@@ -9,8 +9,6 @@ process.env.DB_PORT = process.env.DB_TEST_PORT;
 
 export default defineConfig({
   test: {
-    fileParallelism: false,
-    setupFiles: ['./tests/setup.js'],
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'json-summary', 'json'],
