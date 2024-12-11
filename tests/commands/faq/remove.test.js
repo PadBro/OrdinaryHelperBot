@@ -14,8 +14,8 @@ const interaction = {
 vi.mock('node-fetch');
 fetch.mockReturnValue(
   Promise.resolve({
-    json: () => Promise.resolve(
-      {
+    json: () =>
+      Promise.resolve({
         data: [
           {
             id: 1,
@@ -27,10 +27,9 @@ fetch.mockReturnValue(
             question: 'Abc',
             answer: 'Def',
           },
-        ]
-      }
-    ),
-    text: () => Promise.resolve(1)
+        ],
+      }),
+    text: () => Promise.resolve(1),
   })
 );
 
@@ -45,7 +44,7 @@ it('can retrive autocomplete', async () => {
 });
 
 it('can execute', async () => {
-  interaction.options.getString.mockReturnValue("1");
+  interaction.options.getString.mockReturnValue('1');
   await execute(interaction);
 
   expect(interaction.reply).toBeCalledWith({
@@ -57,7 +56,7 @@ it('can execute', async () => {
 it('returns error if faq is not found', async () => {
   fetch.mockReturnValue(
     Promise.resolve({
-      text: () => Promise.resolve(0)
+      text: () => Promise.resolve(0),
     })
   );
   interaction.options.getString.mockReturnValue('0');

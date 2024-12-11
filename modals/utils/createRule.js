@@ -40,25 +40,27 @@ export const handler = async (interaction) => {
   const number = parseInt(interaction.fields.getTextInputValue('number'));
 
   try {
-    const response = await apiFetch("/rules", {
-      method: "POST",
+    const response = await apiFetch('/rules', {
+      method: 'POST',
       body: {
         name,
         rule,
         number,
-      }
+      },
     });
-    const createResponse = await response.json()
+    const createResponse = await response.json();
 
     if (createResponse.errors) {
-      const errors = Object.entries(createResponse.errors).map(([key, values]) => {
-        return `**${key}**\n${values.join("\n")}`
-      }).join("\n\n")
+      const errors = Object.entries(createResponse.errors)
+        .map(([key, values]) => {
+          return `**${key}**\n${values.join('\n')}`;
+        })
+        .join('\n\n');
       await interaction.reply({
         content: errors,
         ephemeral: true,
       });
-      return
+      return;
     }
 
     await interaction.reply({

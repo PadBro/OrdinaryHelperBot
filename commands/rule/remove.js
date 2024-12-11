@@ -17,13 +17,13 @@ export const data = new SlashCommandBuilder()
 export const autocomplete = async (interaction) => {
   const inputValue = interaction.options.getFocused();
 
-  const response = await apiFetch("/rules", {
-    method: "GET",
+  const response = await apiFetch('/rules', {
+    method: 'GET',
     query: {
-      "filter[name]": inputValue
-    }
+      'filter[name]': inputValue,
+    },
   });
-  const ruleResponse = await response.json()
+  const ruleResponse = await response.json();
   await interaction.respond(
     ruleResponse.data.map((rule) => ({
       name: `${rule.number}. ${rule.name}`,
@@ -37,9 +37,9 @@ export const execute = async (interaction) => {
 
   try {
     const response = await apiFetch(`/rules/${ruleId}`, {
-      method: "DELETE"
+      method: 'DELETE',
     });
-    const result = await response.text()
+    const result = await response.text();
 
     if (result === 0) {
       await interaction.reply({

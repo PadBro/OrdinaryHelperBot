@@ -33,24 +33,26 @@ export const handler = async (interaction) => {
   const answer = interaction.fields.getTextInputValue('answer');
 
   try {
-    const response = await apiFetch("/faqs", {
-      method: "POST",
+    const response = await apiFetch('/faqs', {
+      method: 'POST',
       body: {
         question,
-        answer
-      }
+        answer,
+      },
     });
-    const createResponse = await response.json()
+    const createResponse = await response.json();
 
     if (createResponse.errors) {
-      const errors = Object.entries(createResponse.errors).map(([key, values]) => {
-        return `**${key}**\n${values.join("\n")}`
-      }).join("\n\n")
+      const errors = Object.entries(createResponse.errors)
+        .map(([key, values]) => {
+          return `**${key}**\n${values.join('\n')}`;
+        })
+        .join('\n\n');
       await interaction.reply({
         content: errors,
         ephemeral: true,
       });
-      return
+      return;
     }
 
     await interaction.reply({

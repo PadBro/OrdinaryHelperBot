@@ -14,8 +14,8 @@ const interaction = {
 vi.mock('node-fetch');
 fetch.mockReturnValue(
   Promise.resolve({
-    json: () => Promise.resolve(
-      {
+    json: () =>
+      Promise.resolve({
         data: [
           {
             id: 2,
@@ -29,9 +29,8 @@ fetch.mockReturnValue(
             name: 'Test',
             rule: 'Testing',
           },
-        ]
-      }
-    )
+        ],
+      }),
   })
 );
 
@@ -46,7 +45,7 @@ it('can retrive autocomplete', async () => {
 });
 
 it('can execute', async () => {
-  interaction.options.getString.mockReturnValue("2");
+  interaction.options.getString.mockReturnValue('2');
   await execute(interaction);
 
   expect(interaction.reply).toBeCalledWith({
@@ -65,11 +64,10 @@ it('can execute', async () => {
 it('return error if rule is not found', async () => {
   fetch.mockReturnValue(
     Promise.resolve({
-      json: () => Promise.resolve(
-        {
-          data: []
-        }
-      )
+      json: () =>
+        Promise.resolve({
+          data: [],
+        }),
     })
   );
   await execute(interaction);

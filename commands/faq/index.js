@@ -16,13 +16,13 @@ export const data = new SlashCommandBuilder()
 export const autocomplete = async (interaction) => {
   const inputValue = interaction.options.getFocused();
 
-  const response = await apiFetch("/faqs", {
-    method: "GET",
+  const response = await apiFetch('/faqs', {
+    method: 'GET',
     query: {
-      "filter[question]": inputValue
-    }
+      'filter[question]': inputValue,
+    },
   });
-  const faqResponse = await response.json()
+  const faqResponse = await response.json();
   await interaction.respond(
     faqResponse.data.map((faq) => ({ name: faq.question, value: `${faq.id}` }))
   );
@@ -32,14 +32,14 @@ export const execute = async (interaction) => {
   const faqId = interaction.options.getString('question');
 
   try {
-    const response = await apiFetch("/faqs", {
-      method: "GET",
+    const response = await apiFetch('/faqs', {
+      method: 'GET',
       query: {
-        "filter[id]": faqId
-      }
+        'filter[id]': faqId,
+      },
     });
-    const faqResponse = await response.json()
-    const askedFaq = faqResponse?.data?.[0]
+    const faqResponse = await response.json();
+    const askedFaq = faqResponse?.data?.[0];
 
     if (!askedFaq) {
       await interaction.reply({

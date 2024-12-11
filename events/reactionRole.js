@@ -11,20 +11,20 @@ export const handleReactionRole = async (reaction, user, type) => {
   const member = await reaction.message.guild.members.fetch(user.id);
   const emoji = reaction.emoji.toString();
 
-  const response = await apiFetch("/reaction-roles", {
-    method: "GET",
+  const response = await apiFetch('/reaction-roles', {
+    method: 'GET',
     query: {
-      "filter[channel_id]": reaction.message.channelId,
-      "filter[message_id]": reaction.message.id,
-      "filter[emoji]": emoji,
-    }
+      'filter[channel_id]': reaction.message.channelId,
+      'filter[message_id]': reaction.message.id,
+      'filter[emoji]': emoji,
+    },
   });
-  const reactionRoleResponse = await response.json()
+  const reactionRoleResponse = await response.json();
 
   if (!reactionRoleResponse?.data?.[0]) {
     return;
   }
-  const role = reactionRoleResponse.data[0]
+  const role = reactionRoleResponse.data[0];
 
   const serverRole = reaction.message.guild.roles.cache.find(
     (guildRole) => guildRole.id === role.role_id

@@ -71,27 +71,28 @@ const addReactionRole = async (interaction) => {
   const emoji = interaction.options.getString('emoji');
   const role = interaction.options.getRole('role');
 
-
   try {
-    const response = await apiFetch("/reaction-roles", {
-      method: "POST",
+    const response = await apiFetch('/reaction-roles', {
+      method: 'POST',
       body: {
         message_link: messageLink,
         emoji: emoji,
         role_id: role.id,
-      }
+      },
     });
-    const createResponse = await response.json()
+    const createResponse = await response.json();
 
     if (createResponse.errors) {
-      const errors = Object.entries(createResponse.errors).map(([key, values]) => {
-        return `**${key}**\n${values.join("\n")}`
-      }).join("\n\n")
+      const errors = Object.entries(createResponse.errors)
+        .map(([key, values]) => {
+          return `**${key}**\n${values.join('\n')}`;
+        })
+        .join('\n\n');
       await interaction.reply({
         content: errors,
         ephemeral: true,
       });
-      return
+      return;
     }
 
     await interaction.reply({
@@ -108,13 +109,13 @@ const addReactionRole = async (interaction) => {
 };
 
 const listReactionRole = async (interaction) => {
-  const response = await apiFetch("/reaction-roles", {
-    method: "GET",
+  const response = await apiFetch('/reaction-roles', {
+    method: 'GET',
     query: {
-      full: true
-    }
+      full: true,
+    },
   });
-  const reactionRoles = await response.json()
+  const reactionRoles = await response.json();
 
   const rolesOrderedByMessage = {};
   const embeds = [];
@@ -180,7 +181,7 @@ const removeReactionRole = async (interaction) => {
 
   try {
     await apiFetch(`/reaction-roles/${reactionRoleId}`, {
-      method: "DELETE"
+      method: 'DELETE',
     });
 
     await interaction.reply({

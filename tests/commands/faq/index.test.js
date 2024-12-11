@@ -1,4 +1,4 @@
-import { expect, it, vi, beforeEach } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import { execute, autocomplete } from '../../../commands/faq/index.js';
 import fetch from 'node-fetch';
 
@@ -14,8 +14,8 @@ const interaction = {
 vi.mock('node-fetch');
 fetch.mockReturnValue(
   Promise.resolve({
-    json: () => Promise.resolve(
-      {
+    json: () =>
+      Promise.resolve({
         data: [
           {
             id: 1,
@@ -27,14 +27,12 @@ fetch.mockReturnValue(
             question: 'Abc',
             answer: 'Def',
           },
-        ]
-      }
-    )
+        ],
+      }),
   })
 );
 
 it('can retrive autocomplete', async () => {
-
   interaction.options.getFocused.mockReturnValue('');
   await autocomplete(interaction);
 
@@ -45,7 +43,7 @@ it('can retrive autocomplete', async () => {
 });
 
 it('can execute', async () => {
-  interaction.options.getString.mockReturnValue("1");
+  interaction.options.getString.mockReturnValue('1');
   await execute(interaction);
 
   expect(interaction.reply).toBeCalledWith({
@@ -64,11 +62,10 @@ it('can execute', async () => {
 it('returns error if faq is not found', async () => {
   fetch.mockReturnValue(
     Promise.resolve({
-      json: () => Promise.resolve(
-        {
-          data: []
-        }
-      )
+      json: () =>
+        Promise.resolve({
+          data: [],
+        }),
     })
   );
   await execute(interaction);
