@@ -48,7 +48,7 @@ export const execute = async (interaction) => {
   const user = interaction.options.getUser('member') ?? interaction.user;
 
   if (
-    !hasPermission(interaction, PermissionFlagsBits.ViewAuditLog) &&
+    !(await hasPermission(interaction, PermissionFlagsBits.ViewAuditLog)) &&
     user !== interaction.user
   ) {
     interaction.reply({
@@ -110,16 +110,16 @@ export const execute = async (interaction) => {
     .setThumbnail(user.displayAvatarURL())
     .setTimestamp();
 
-    const confirmed = await confirmAction(
-      interaction,
-      'Do you want to report this Chunkloader?',
-      'Report',
-      ButtonStyle.Success,
-      [embed]
-    );
-    if (!confirmed) {
-      return;
-    }
+  const confirmed = await confirmAction(
+    interaction,
+    'Do you want to report this Chunkloader?',
+    'Report',
+    ButtonStyle.Success,
+    [embed]
+  );
+  if (!confirmed) {
+    return;
+  }
 
   try {
     const channel = interaction.guild.channels.cache.get(
