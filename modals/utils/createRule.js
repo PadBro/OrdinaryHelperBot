@@ -40,7 +40,7 @@ export const handler = async (interaction) => {
   const number = parseInt(interaction.fields.getTextInputValue('number'));
 
   try {
-    const response = await apiFetch('/rules', {
+    const response = await apiFetch('/rule', {
       method: 'POST',
       body: {
         name,

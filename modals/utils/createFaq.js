@@ -33,7 +33,7 @@ export const handler = async (interaction) => {
   const answer = interaction.fields.getTextInputValue('answer');
 
   try {
-    const response = await apiFetch('/faqs', {
+    const response = await apiFetch('/faq', {
       method: 'POST',
       body: {
         question,

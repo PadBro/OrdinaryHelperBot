@@ -16,7 +16,7 @@ export const data = new SlashCommandBuilder()
 export const autocomplete = async (interaction) => {
   const inputValue = interaction.options.getFocused();
 
-  const response = await apiFetch('/rules', {
+  const response = await apiFetch('/rule', {
     method: 'GET',
     query: {
       'filter[name]': inputValue,
@@ -35,7 +35,7 @@ export const execute = async (interaction) => {
   const ruleId = interaction.options.getString('rule');
 
   try {
-    const response = await apiFetch('/rules', {
+    const response = await apiFetch('/rule', {
       method: 'GET',
       query: {
         'filter[id]': ruleId,

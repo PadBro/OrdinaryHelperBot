@@ -72,7 +72,7 @@ const addReactionRole = async (interaction) => {
   const role = interaction.options.getRole('role');
 
   try {
-    const response = await apiFetch('/reaction-roles', {
+    const response = await apiFetch('/reaction-role', {
       method: 'POST',
       body: {
         message_link: messageLink,
@@ -109,7 +109,7 @@ const addReactionRole = async (interaction) => {
 };
 
 const listReactionRole = async (interaction) => {
-  const response = await apiFetch('/reaction-roles', {
+  const response = await apiFetch('/reaction-role', {
     method: 'GET',
     query: {
       full: true,
@@ -180,7 +180,7 @@ const removeReactionRole = async (interaction) => {
   const reactionRoleId = interaction.options.getString('reaction-role-id');
 
   try {
-    await apiFetch(`/reaction-roles/${reactionRoleId}`, {
+    await apiFetch(`/reaction-role/${reactionRoleId}`, {
       method: 'DELETE',
     });
 

@@ -11,7 +11,7 @@ export const handleReactionRole = async (reaction, user, type) => {
   const member = await reaction.message.guild.members.fetch(user.id);
   const emoji = reaction.emoji.toString();
 
-  const response = await apiFetch('/reaction-roles', {
+  const response = await apiFetch('/reaction-role', {
     method: 'GET',
     query: {
       'filter[channel_id]': reaction.message.channelId,
