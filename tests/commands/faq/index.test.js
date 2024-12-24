@@ -1,6 +1,6 @@
 import { expect, it, vi } from 'vitest';
 import { execute, autocomplete } from '../../../commands/faq/index.js';
-import { faq } from '../../../models/faq.js';
+import fetch from 'node-fetch';
 
 const interaction = {
   options: {
@@ -11,20 +11,28 @@ const interaction = {
   reply: vi.fn(),
 };
 
-it('can retrive autocomplete', async () => {
-  await faq.bulkCreate([
-    {
-      id: 1,
-      question: 'Test',
-      answer: 'Testing',
-    },
-    {
-      id: 2,
-      question: 'Abc',
-      answer: 'Def',
-    },
-  ]);
+vi.mock('node-fetch');
+fetch.mockReturnValue(
+  Promise.resolve({
+    json: () =>
+      Promise.resolve({
+        data: [
+          {
+            id: 1,
+            question: 'Test',
+            answer: 'Testing',
+          },
+          {
+            id: 2,
+            question: 'Abc',
+            answer: 'Def',
+          },
+        ],
+      }),
+  })
+);
 
+it('can retrive autocomplete', async () => {
   interaction.options.getFocused.mockReturnValue('');
   await autocomplete(interaction);
 
@@ -35,12 +43,7 @@ it('can retrive autocomplete', async () => {
 });
 
 it('can execute', async () => {
-  const faqModel = await faq.create({
-    question: 'Test',
-    answer: 'Testing',
-  });
-
-  interaction.options.getString.mockReturnValue(`${faqModel.id}`);
+  interaction.options.getString.mockReturnValue('1');
   await execute(interaction);
 
   expect(interaction.reply).toBeCalledWith({
@@ -57,7 +60,14 @@ it('can execute', async () => {
 });
 
 it('returns error if faq is not found', async () => {
-  interaction.options.getString.mockReturnValue('0');
+  fetch.mockReturnValue(
+    Promise.resolve({
+      json: () =>
+        Promise.resolve({
+          data: [],
+        }),
+    })
+  );
   await execute(interaction);
 
   expect(interaction.reply).toBeCalledWith({

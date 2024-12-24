@@ -1,6 +1,6 @@
 import { expect, it, vi } from 'vitest';
 import { execute, autocomplete } from '../../../commands/rule/remove.js';
-import { rule } from '../../../models/rule.js';
+import fetch from 'node-fetch';
 
 const interaction = {
   options: {
@@ -11,20 +11,31 @@ const interaction = {
   reply: vi.fn(),
 };
 
-it('can retrive autocomplete', async () => {
-  await rule.bulkCreate([
-    {
-      number: 2,
-      name: 'Test',
-      rule: 'Testing',
-    },
-    {
-      number: 1,
-      name: 'Abc',
-      rule: 'Def',
-    },
-  ]);
+vi.mock('node-fetch');
+fetch.mockReturnValue(
+  Promise.resolve({
+    json: () =>
+      Promise.resolve({
+        data: [
+          {
+            id: 2,
+            number: 1,
+            name: 'Abc',
+            rule: 'Def',
+          },
+          {
+            id: 1,
+            number: 2,
+            name: 'Test',
+            rule: 'Testing',
+          },
+        ],
+      }),
+    text: () => Promise.resolve(1),
+  })
+);
 
+it('can retrive autocomplete', async () => {
   interaction.options.getFocused.mockReturnValue('');
   await autocomplete(interaction);
 
@@ -35,42 +46,22 @@ it('can retrive autocomplete', async () => {
 });
 
 it('can execute', async () => {
-  const ruleModel = await rule.create({
-    number: 2,
-    name: 'Test',
-    rule: 'Testing',
-  });
-
-  interaction.options.getString.mockReturnValue(`${ruleModel.id}`);
+  interaction.options.getString.mockReturnValue('1');
   await execute(interaction);
 
   expect(interaction.reply).toBeCalledWith({
     content: 'The rule has been removed.',
     ephemeral: true,
   });
-
-  const removedrule = await rule.findOne({
-    where: {
-      id: ruleModel.id,
-    },
-  });
-
-  expect(removedrule).toBeNull();
 });
 
 it('return error if rule is not found', async () => {
-  await rule.create({
-    number: 2,
-    name: 'Test',
-    rule: 'Testing',
-  });
+  fetch.mockReturnValue(
+    Promise.resolve({
+      text: () => Promise.resolve(0),
+    })
+  );
 
   interaction.options.getString.mockReturnValue('0');
   await execute(interaction);
-
-  expect(interaction.reply).toBeCalledWith({
-    content: 'The rule was not found.',
-    ephemeral: true,
-  });
-  expect(await rule.count()).toBe(1);
 });

@@ -4,8 +4,8 @@ import {
   ActionRowBuilder,
   TextInputStyle,
 } from 'discord.js';
-import { rule as ruleModel } from '../../models/rule.js';
 import Logger from '../../utils/logger.js';
+import { apiFetch } from '../../utils/apiFetch.js';
 
 const modal = new ModalBuilder()
   .setCustomId('createRule')
@@ -40,25 +40,38 @@ export const handler = async (interaction) => {
   const number = parseInt(interaction.fields.getTextInputValue('number'));
 
   try {
-    await ruleModel.create({ name, rule, number });
+    const response = await apiFetch('/rule', {
+      method: 'POST',
+      body: {
+        name,
+        rule,
+        number,
+      },
+    });
+    const createResponse = await response.json();
+
+    if (createResponse.errors) {
+      const errors = Object.entries(createResponse.errors)
+        .map(([key, values]) => {
+          return `**${key}**\n${values.join('\n')}`;
+        })
+        .join('\n\n');
+      await interaction.reply({
+        content: errors,
+        ephemeral: true,
+      });
+      return;
+    }
 
     await interaction.reply({
       content: `The rule "${name}" was created.`,
       ephemeral: true,
     });
   } catch (e) {
-    if (e.errors) {
-      const errors = e.errors.map((error) => error.message).join('\n');
-      await interaction.reply({
-        content: errors,
-        ephemeral: true,
-      });
-    } else {
-      Logger.error(e);
-      await interaction.reply({
-        content: `An error occurred while creating the rule entry. Please try again later. If this error persists, please report to the staff team.`,
-        ephemeral: true,
-      });
-    }
+    Logger.error(e);
+    await interaction.reply({
+      content: `An error occurred while creating the rule entry. Please try again later. If this error persists, please report to the staff team.`,
+      ephemeral: true,
+    });
   }
 };

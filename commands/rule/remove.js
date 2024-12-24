@@ -1,7 +1,6 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
-import { rule } from '../../models/rule.js';
-import { Op } from 'sequelize';
 import Logger from '../../utils/logger.js';
+import { apiFetch } from '../../utils/apiFetch.js';
 
 export const data = new SlashCommandBuilder()
   .setName('rule-remove')
@@ -18,16 +17,15 @@ export const data = new SlashCommandBuilder()
 export const autocomplete = async (interaction) => {
   const inputValue = interaction.options.getFocused();
 
-  const rules = await rule.findAll({
-    where: {
-      rule: {
-        [Op.like]: `${inputValue}%`,
-      },
+  const response = await apiFetch('/rule', {
+    method: 'GET',
+    query: {
+      'filter[name]': inputValue,
     },
-    order: [['number', 'ASC']],
   });
+  const ruleResponse = await response.json();
   await interaction.respond(
-    rules.map((rule) => ({
+    ruleResponse.data.map((rule) => ({
       name: `${rule.number}. ${rule.name}`,
       value: `${rule.id}`,
     }))
@@ -38,11 +36,11 @@ export const execute = async (interaction) => {
   const ruleId = interaction.options.getString('rule');
 
   try {
-    const result = await rule.destroy({
-      where: {
-        id: ruleId,
-      },
+    const response = await apiFetch(`/rule/${ruleId}`, {
+      method: 'DELETE',
     });
+    const result = await response.text();
+
     if (result === 0) {
       await interaction.reply({
         content: 'The rule was not found.',

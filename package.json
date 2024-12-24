@@ -25,10 +25,7 @@
     "dayjs": "^1.11.13",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5",
-    "mariadb": "^3.4.0",
-    "node-fetch": "^3.3.2",
-    "sequelize": "^6.37.5",
-    "sqlite3": "^5.1.7"
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
