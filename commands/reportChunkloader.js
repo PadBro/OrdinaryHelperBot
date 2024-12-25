@@ -47,13 +47,13 @@ export const execute = async (interaction) => {
   const user = interaction.options.getUser('member') ?? interaction.user;
 
   if (
-    !(await hasPermission(interaction, PermissionFlagsBits.ViewAuditLog)) &&
-    user !== interaction.user
+    user !== interaction.user &&
+    !(await hasPermission(
+      interaction,
+      PermissionFlagsBits.ViewAuditLog,
+      'You can not report a chunkloader for other members.'
+    ))
   ) {
-    interaction.reply({
-      content: 'You can not report a chunkloader for other members.',
-      ephemeral: true,
-    });
     return;
   }
 

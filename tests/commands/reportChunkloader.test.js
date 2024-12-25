@@ -240,9 +240,4 @@ it('can not report chunkloader for other if no permissions', async () => {
   expect(EmbedBuilder.mock.results).toHaveLength(0);
 
   expect(channelMock).not.toHaveBeenCalled();
-
-  expect(interaction.reply).toBeCalledWith({
-    content: 'You can not report a chunkloader for other members.',
-    ephemeral: true,
-  });
 });
