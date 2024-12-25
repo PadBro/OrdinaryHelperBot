@@ -1,6 +1,6 @@
 import { expect, it, vi } from 'vitest';
 import { execute, autocomplete } from '../../../commands/faq/remove.js';
-import { faq } from '../../../models/faq.js';
+import fetch from 'node-fetch';
 
 const interaction = {
   options: {
@@ -11,20 +11,29 @@ const interaction = {
   reply: vi.fn(),
 };
 
-it('can retrive autocomplete', async () => {
-  await faq.bulkCreate([
-    {
-      id: 1,
-      question: 'Test',
-      answer: 'Testing',
-    },
-    {
-      id: 2,
-      question: 'Abc',
-      answer: 'Def',
-    },
-  ]);
+vi.mock('node-fetch');
+fetch.mockReturnValue(
+  Promise.resolve({
+    json: () =>
+      Promise.resolve({
+        data: [
+          {
+            id: 1,
+            question: 'Test',
+            answer: 'Testing',
+          },
+          {
+            id: 2,
+            question: 'Abc',
+            answer: 'Def',
+          },
+        ],
+      }),
+    text: () => Promise.resolve(1),
+  })
+);
 
+it('can retrive autocomplete', async () => {
   interaction.options.getFocused.mockReturnValue('');
   await autocomplete(interaction);
 
@@ -35,34 +44,21 @@ it('can retrive autocomplete', async () => {
 });
 
 it('can execute', async () => {
-  const faqModel = await faq.create({
-    question: 'Test',
-    answer: 'Testing',
-  });
-
-  interaction.options.getString.mockReturnValue(`${faqModel.id}`);
+  interaction.options.getString.mockReturnValue('1');
   await execute(interaction);
 
   expect(interaction.reply).toBeCalledWith({
     content: 'The FAQ has been removed.',
     ephemeral: true,
   });
-
-  const removedFaq = await faq.findOne({
-    where: {
-      id: faqModel.id,
-    },
-  });
-
-  expect(removedFaq).toBeNull();
 });
 
 it('returns error if faq is not found', async () => {
-  await faq.create({
-    question: 'Test',
-    answer: 'Testing',
-  });
-
+  fetch.mockReturnValue(
+    Promise.resolve({
+      text: () => Promise.resolve(0),
+    })
+  );
   interaction.options.getString.mockReturnValue('0');
   await execute(interaction);
 
@@ -70,5 +66,4 @@ it('returns error if faq is not found', async () => {
     content: 'The FAQ was not found.',
     ephemeral: true,
   });
-  expect(await faq.count()).toBe(1);
 });

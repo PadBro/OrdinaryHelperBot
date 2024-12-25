@@ -1,6 +1,6 @@
 import { expect, it, vi } from 'vitest';
 import { execute, autocomplete } from '../../../commands/rule/index.js';
-import { rule } from '../../../models/rule.js';
+import fetch from 'node-fetch';
 
 const interaction = {
   options: {
@@ -11,20 +11,30 @@ const interaction = {
   reply: vi.fn(),
 };
 
-it('can retrive autocomplete', async () => {
-  await rule.bulkCreate([
-    {
-      number: 2,
-      name: 'Test',
-      rule: 'Testing',
-    },
-    {
-      number: 1,
-      name: 'Abc',
-      rule: 'Def',
-    },
-  ]);
+vi.mock('node-fetch');
+fetch.mockReturnValue(
+  Promise.resolve({
+    json: () =>
+      Promise.resolve({
+        data: [
+          {
+            id: 2,
+            number: 1,
+            name: 'Abc',
+            rule: 'Def',
+          },
+          {
+            id: 1,
+            number: 2,
+            name: 'Test',
+            rule: 'Testing',
+          },
+        ],
+      }),
+  })
+);
 
+it('can retrive autocomplete', async () => {
   interaction.options.getFocused.mockReturnValue('');
   await autocomplete(interaction);
 
@@ -35,13 +45,7 @@ it('can retrive autocomplete', async () => {
 });
 
 it('can execute', async () => {
-  const ruleModel = await rule.create({
-    number: 2,
-    name: 'Test',
-    rule: 'Testing',
-  });
-
-  interaction.options.getString.mockReturnValue(`${ruleModel.id}`);
+  interaction.options.getString.mockReturnValue('2');
   await execute(interaction);
 
   expect(interaction.reply).toBeCalledWith({
@@ -49,8 +53,8 @@ it('can execute', async () => {
       {
         data: {
           color: 15762234,
-          description: 'Testing',
-          title: '2. Test',
+          description: 'Def',
+          title: '1. Abc',
         },
       },
     ],
@@ -58,7 +62,14 @@ it('can execute', async () => {
 });
 
 it('return error if rule is not found', async () => {
-  interaction.options.getString.mockReturnValue('0');
+  fetch.mockReturnValue(
+    Promise.resolve({
+      json: () =>
+        Promise.resolve({
+          data: [],
+        }),
+    })
+  );
   await execute(interaction);
 
   expect(interaction.reply).toBeCalledWith({
