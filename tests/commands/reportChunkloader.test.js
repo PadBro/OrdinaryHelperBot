@@ -92,12 +92,12 @@ it('can report chunkloader', async () => {
     {
       inline: true,
       name: 'Overworld:',
-      value: 'X: 8\nY: 8\nZ: 8\n```/tp @p 8 8 8```',
+      value: 'X: 8\nY: 8\nZ: 8\n```/execute in minecraft:overworld run tp @s 8 8 8```',
     },
     {
       inline: true,
       name: 'Nether:',
-      value: 'X: 1\nY: 8\nZ: 1\n```/tp @p 1 8 1```',
+      value: 'X: 1\nY: 8\nZ: 1\n```/execute in minecraft:the_nether run tp @s 1 8 1```',
     },
   ]);
 
@@ -135,12 +135,12 @@ it('can report chunkloader for Nether', async () => {
     {
       inline: true,
       name: 'Overworld:',
-      value: 'X: 64\nY: 8\nZ: 64\n```/tp @p 64 8 64```',
+      value: 'X: 64\nY: 8\nZ: 64\n```/execute in minecraft:overworld run tp @s 64 8 64```',
     },
     {
       inline: true,
       name: 'Nether:',
-      value: 'X: 8\nY: 8\nZ: 8\n```/tp @p 8 8 8```',
+      value: 'X: 8\nY: 8\nZ: 8\n```/execute in minecraft:the_nether run tp @s 8 8 8```',
     },
   ]);
 
@@ -170,7 +170,7 @@ it('can report chunkloader for End', async () => {
   await execute(interaction);
   const embedBuilderInstance = EmbedBuilder.mock.results[0].value;
 
-  expect(embedBuilderInstance.setColor).toHaveBeenCalledWith('#000000');
+  expect(embedBuilderInstance.setColor).toHaveBeenCalledWith('#6a0dad');
   expect(embedBuilderInstance.setDescription).toHaveBeenCalledWith(
     '**Chunkloader from**: [object Object]\n\n**Dimension**: end'
   );
@@ -178,7 +178,7 @@ it('can report chunkloader for End', async () => {
     {
       inline: true,
       name: 'End:',
-      value: 'X: 8\nY: 8\nZ: 8\n```/tp @p 8 8 8```',
+      value: 'X: 8\nY: 8\nZ: 8\n```/execute in minecraft:the_end run tp @s 8 8 8```',
     },
   ]);
 

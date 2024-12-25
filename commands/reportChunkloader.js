@@ -11,7 +11,6 @@ import Logger from '../utils/logger.js';
 export const data = new SlashCommandBuilder()
   .setName('report-chunkloader')
   .setDescription('Report a chunkloader')
-  .setDefaultMemberPermissions(PermissionFlagsBits.ViewAuditLog)
   .addIntegerOption((option) =>
     option.setName('x').setDescription('The X coordinate.').setRequired(true)
   )
@@ -77,25 +76,43 @@ export const execute = async (interaction) => {
       coordinates.Overworld = { x: x * 8, y, z: z * 8 };
       break;
     case 'end':
-      color = '#000000';
+      color = '#6a0dad';
       coordinates.End = { x, y, z };
       break;
   }
+
   const fields = Object.entries(coordinates)
     .filter(([, localCoordinates]) => localCoordinates !== null)
-    .map(([localDimension, localCoordinates]) => ({
-      name: `${localDimension}:`,
-      value:
-        `X: ${localCoordinates.x}\nY: ${localCoordinates.y}\nZ: ${localCoordinates.z}\n` +
-        '```/tp @p ' +
-        localCoordinates.x +
-        ' ' +
-        localCoordinates.y +
-        ' ' +
-        localCoordinates.z +
-        '```',
-      inline: true,
-    }));
+    .map(([localDimension, localCoordinates]) => {
+      let tpDimension = '';
+      switch (localDimension) {
+        case 'Overworld':
+          tpDimension = 'overworld';
+          break;
+        case 'Nether':
+          tpDimension = 'the_nether';
+          break;
+        case 'End':
+          tpDimension = 'the_end';
+          break;
+      }
+
+      return {
+        name: `${localDimension}:`,
+        value:
+          `X: ${localCoordinates.x}\nY: ${localCoordinates.y}\nZ: ${localCoordinates.z}\n` +
+          '```/execute in minecraft:' +
+          tpDimension +
+          ' run tp @s ' +
+          localCoordinates.x +
+          ' ' +
+          localCoordinates.y +
+          ' ' +
+          localCoordinates.z +
+          '```',
+        inline: true,
+      };
+    });
 
   const description = [
     `**Chunkloader from**: ${user}`,
