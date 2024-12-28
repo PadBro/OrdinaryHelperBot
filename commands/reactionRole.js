@@ -131,7 +131,9 @@ const listReactionRole = async (interaction) => {
       } catch (e) {
         // Unknown message || Unknown channel
         if (e.code === 10008 || e.code === 10003) {
-          role.destroy();
+          Logger.warning(
+            `Message/Channel not found for Reaction role ${role.id}, ${e}`
+          );
           continue;
         }
         Logger.error(
