@@ -6,8 +6,6 @@ import {
   Partials,
   ActivityType,
 } from 'discord.js';
-import { sequelize } from './utils/database.js';
-import models from './models/index.js';
 import {
   sendLeaveMessage,
   addRole,
@@ -22,6 +20,7 @@ import {
   autocompleteHandler,
 } from './events/interaction.js';
 import { handleReactionRole } from './events/reactionRole.js';
+import dayjs from 'dayjs';
 
 const intents = [
   GatewayIntentBits.Guilds,
@@ -47,7 +46,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 
 client.once(Events.ClientReady, (readyClient) => {
-  Logger.debug(`Ready! Logged in as ${readyClient.user.tag}`);
+  Logger.debug(`Ready! Logged in as ${readyClient.user.tag} at ` + dayjs().format('YYYY-MM-DD HH:mm:ss'));
   readyClient.user.setActivity('on play.ordinary-smp.com', {
     type: ActivityType.Playing,
   });
@@ -71,23 +70,6 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 client.on(Events.MessageReactionRemove, async (reaction, user) => {
   handleReactionRole(reaction, user, 'remove');
 });
-
-try {
-  await sequelize.authenticate();
-  Logger.debug('Connection to the database has been established successfully.');
-} catch (error) {
-  Logger.error('Unable to connect to the database:', error);
-}
-
-Logger.debug('syncing models');
-for (const model of models) {
-  try {
-    await model.sync({ alter: true });
-  } catch (e) {
-    throw `${model.name}: ${e}`;
-  }
-}
-Logger.debug('models synced');
 
 deployCommands();
 client.login(process.env.DISCORD_TOKEN);

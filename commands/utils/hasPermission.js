@@ -1,7 +1,11 @@
-export const hasPermission = async (interaction, requiredPermissionFlag) => {
+export const hasPermission = async (
+  interaction,
+  requiredPermissionFlag,
+  message = 'insufficient permission'
+) => {
   if (!interaction.memberPermissions.has(requiredPermissionFlag)) {
     await interaction.reply({
-      content: 'insufficient permission',
+      content: message,
       ephemeral: true,
     });
     return false;

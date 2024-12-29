@@ -1,16 +1,15 @@
 import { ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
 
-export const confirmAction = async (
-  interaction,
+export const confirmActionDm = async (
+  channel,
   confirmMessage,
   confirmLabel,
-  confirmStyle = ButtonStyle.Danger,
-  embeds = null
+  confirmationMessage
 ) => {
   const confirm = new ButtonBuilder()
     .setCustomId('confirm')
     .setLabel(confirmLabel)
-    .setStyle(confirmStyle);
+    .setStyle(ButtonStyle.Danger);
 
   const cancel = new ButtonBuilder()
     .setCustomId('cancel')
@@ -19,24 +18,23 @@ export const confirmAction = async (
 
   const row = new ActionRowBuilder().addComponents(confirm, cancel);
 
-  const response = await interaction.reply({
+  const response = await channel.send({
     content: confirmMessage,
     components: [row],
-    embeds: embeds,
     ephemeral: true,
   });
-  const collectorFilter = (i) => i.user.id === interaction.user.id;
+  const collectorFilter = (i) => i.user.id === channel.recipient.id;
 
+  let confirmation;
   try {
-    const confirmation = await response.awaitMessageComponent({
+    confirmation = await response.awaitMessageComponent({
       filter: collectorFilter,
       time: 60_000,
     });
 
     if (confirmation.customId === 'confirm') {
       await confirmation.update({
-        content: 'executing command',
-        embeds: [],
+        content: confirmationMessage,
         components: [],
       });
       return true;
@@ -44,16 +42,14 @@ export const confirmAction = async (
       await confirmation.update({
         content: 'Action cancelled',
         components: [],
-        embeds: [],
         ephemeral: true,
       });
       return false;
     }
   } catch {
-    await interaction.editReply({
+    await confirmation.update({
       content: 'Confirmation not received within 1 minute, cancelling',
       components: [],
-      embeds: [],
     });
     return false;
   }
